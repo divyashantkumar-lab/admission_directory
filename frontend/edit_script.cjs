@@ -1,22 +1,45 @@
-import { useEffect, useState, useMemo, useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import SEOMeta from '../components/SEOMeta';
-import { fetchStudents } from '../store/studentSlice';
-import { StudentCard, CardSkeleton } from '../components/StudentCard';
-import StudentModal from '../components/StudentModal';
-import {
-  UsersIcon,
-  GitHubIcon,
-  BriefcaseIcon,
-  StarIcon,
-  CrownIcon,
-  FlagIcon,
-  SearchIcon,
-  CloseIcon,
-  EmptySearchIcon
-} from '../components/icons';
+const fs = require('fs');
+let code = fs.readFileSync('src/pages/StudentList.jsx', 'utf-8');
 
-export default function StudentList() {
+// 1. Add new Icons
+const newIcons = `
+const UsersIcon = ({ className = "" }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={mergeClasses("w-4 h-4 inline", className)}>
+    <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+    <circle cx="9" cy="7" r="4" />
+    <path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75" />
+  </svg>
+);
+
+const StarIcon = ({ className = "" }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={mergeClasses("w-4 h-4 inline", className)}>
+    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+  </svg>
+);
+
+const CrownIcon = ({ className = "" }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={mergeClasses("w-4 h-4 inline", className)}>
+    <path d="M2 22h20M2 18l3-11 5 6 2-9 2 9 5-6 3 11H2z"/>
+  </svg>
+);
+
+const FlagIcon = ({ className = "" }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={mergeClasses("w-4 h-4 inline", className)}>
+    <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1zM4 22v-7" />
+  </svg>
+);
+`;
+code = code.replace('// ── Avatar Component', newIcons + '\n// ── Avatar Component');
+
+// 2. Change Avatar sizes
+code = code.replace(
+  "sm: 'w-12 h-12 text-base',",
+  "sm: 'w-16 h-16 text-xl',"
+);
+
+// 3. Main component changes
+// We'll replace the inside of export default function StudentList() { ... }
+const studentListCode = `export default function StudentList() {
   const dispatch = useDispatch();
   const { list, loading, error } = useSelector((state) => state.students);
 
@@ -47,7 +70,7 @@ export default function StudentList() {
       'Internships': list.filter(s => s.internships).length,
       'Student council': list.filter(s => s.clubOrCouncil?.toLowerCase().includes('council')).length,
       'Core members': list.filter(s => s.clubOrCouncil?.toLowerCase().includes('core')).length,
-      'OG OC': list.filter(s => s.clubOrCouncil?.toLowerCase().match(/\b(og|oc)\b/)).length,
+      'OG OC': list.filter(s => s.clubOrCouncil?.toLowerCase().match(/\\b(og|oc)\\b/)).length,
     };
   }, [list]);
 
@@ -84,7 +107,7 @@ export default function StudentList() {
       if (activeFilterTab === 'Internships' && !student.internships) return false;
       if (activeFilterTab === 'Student council' && !student.clubOrCouncil?.toLowerCase().includes('council')) return false;
       if (activeFilterTab === 'Core members' && !student.clubOrCouncil?.toLowerCase().includes('core')) return false;
-      if (activeFilterTab === 'OG OC' && !student.clubOrCouncil?.toLowerCase().match(/\b(og|oc)\b/)) return false;
+      if (activeFilterTab === 'OG OC' && !student.clubOrCouncil?.toLowerCase().match(/\\b(og|oc)\\b/)) return false;
 
       return true;
     });
@@ -108,17 +131,17 @@ export default function StudentList() {
               <button
                 key={tab.id}
                 onClick={() => setActiveFilterTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all ${
+                className={\`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all \${
                   isActive 
                     ? 'bg-brand-black text-white border-brand-black shadow-md' 
                     : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                }`}
+                }\`}
               >
                 <span className={isActive ? 'text-white' : 'text-gray-500'}>
                   {tab.icon}
                 </span>
                 <span className="font-semibold text-sm">{tab.label}</span>
-                <span className={`text-xs font-bold ${isActive ? 'text-gray-300' : 'text-gray-400'}`}>
+                <span className={\`text-xs font-bold \${isActive ? 'text-gray-300' : 'text-gray-400'}\`}>
                   {counts[tab.id]}
                 </span>
               </button>
@@ -173,7 +196,7 @@ export default function StudentList() {
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
               {filteredStudents.map((student, index) => (
                 <StudentCard
-                  key={`${student.id}-${index}`}
+                  key={\`\${student.id}-\${index}\`}
                   student={student}
                   onOpen={() => openModal(student)}
                   onTagToggle={() => {}}
@@ -207,4 +230,8 @@ export default function StudentList() {
       )}
     </>
   );
-}
+}`;
+
+code = code.replace(/export default function StudentList\(\) \{[\s\S]*$/, studentListCode);
+
+fs.writeFileSync('src/pages/StudentList.jsx', code);
