@@ -5,7 +5,7 @@ Enterprise full-stack student portfolio directory with CSV/XLS/XLSX ingestion, J
 The repository contains two isolated applications:
 
 ```
-backend/     Express API (port 5000)
+backend/     Express API (port 8000)
 frontend/    Vite + React (port 5173)
 ```
 
@@ -57,7 +57,7 @@ Standard users can sign up via the UI (password must meet complexity rules).
 
 **Frontend** (`frontend/.env`):
 
-- `VITE_API_URL=http://localhost:5000/api`
+- `VITE_API_URL=http://localhost:8000/api`
 - `VITE_CANONICAL_BASE_URL=https://portfolio.example.com`
 
 
