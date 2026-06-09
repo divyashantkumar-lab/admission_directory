@@ -320,13 +320,13 @@ export function StudentCard({ student, onOpen, onTagToggle, selectedTags = [] })
 
         {/* Academics Grid - always rendered at exact same dimensions and symmetrical */}
         <div className="grid grid-cols-2 gap-2 text-center h-[2.8rem]">
-          <div className={class12 ? "bg-secondary-1/40 border border-primary-1/10 rounded-xl py-1.5 px-2" : "bg-gray-50/50 border border-gray-100 rounded-xl py-1.5 px-2"}>
+          {(class12 && Number.parseInt(class12) > 85) && <div className={class12 ? "bg-secondary-1/40 border border-primary-1/10 rounded-xl py-1.5 px-2" : "bg-gray-50/50 border border-gray-100 rounded-xl py-1.5 px-2"}>
             <span className="block text-[8px] text-gray-400 font-bold uppercase tracking-wider">Class XII</span>
             <span className={`text-[11px] font-extrabold ${class12 ? 'text-brand-black' : 'text-gray-300'}`}>
               {class12 ? `${class12}%` : 'N/A'}
             </span>
-          </div>
-          {jeeMains && <div className={jeeMains ? "bg-secondary-1/40 border border-primary-1/10 rounded-xl py-1.5 px-2" : "bg-gray-50/50 border border-gray-100 rounded-xl py-1.5 px-2"}>
+          </div>}
+          {(jeeMains && Number.parseInt(jeeMains) > 85) && <div className={jeeMains ? "bg-secondary-1/40 border border-primary-1/10 rounded-xl py-1.5 px-2" : "bg-gray-50/50 border border-gray-100 rounded-xl py-1.5 px-2"}>
             <span className="block text-[8px] text-gray-400 font-bold uppercase tracking-wider">JEE Mains</span>
             <span className={`text-[11px] font-extrabold ${jeeMains ? 'text-brand-black' : 'text-gray-300'}`}>
               {jeeMains ? `${jeeMains}%ile` : 'N/A'}
