@@ -45,9 +45,9 @@ export default function StudentList() {
       'All students': list.length,
       'Open source': list.filter(s => s.openSource).length,
       'Internships': list.filter(s => s.internships).length,
-      'Student council': list.filter(s => s.clubOrCouncil?.toLowerCase().includes('council')).length,
-      'Core members': list.filter(s => s.clubOrCouncil?.toLowerCase().includes('core')).length,
-      'OG OC': list.filter(s => s.clubOrCouncil?.toLowerCase().match(/\b(og|oc)\b/)).length,
+      'Student council': list.filter(s => s.clubOrCouncil != "").length,
+      // 'Core members': list.filter(s => s.clubOrCouncil?.toLowerCase().includes('core')).length,
+      // 'OG OC': list.filter(s => s.clubOrCouncil?.toLowerCase().match(/\b(og|oc)\b/)).length,
     };
   }, [list]);
 
@@ -56,8 +56,8 @@ export default function StudentList() {
     { id: 'Open source', label: 'Open source', icon: <GitHubIcon /> },
     { id: 'Internships', label: 'Internships', icon: <BriefcaseIcon /> },
     { id: 'Student council', label: 'Student council', icon: <StarIcon /> },
-    { id: 'Core members', label: 'Core members', icon: <CrownIcon /> },
-    { id: 'OG OC', label: 'OG OC', icon: <FlagIcon /> },
+    // { id: 'Core members', label: 'Core members', icon: <CrownIcon /> },
+    // { id: 'OG OC', label: 'OG OC', icon: <FlagIcon /> },
   ];
 
   // Compute final filtered student list in memory (instant)
@@ -82,9 +82,9 @@ export default function StudentList() {
 
       if (activeFilterTab === 'Open source' && !student.openSource) return false;
       if (activeFilterTab === 'Internships' && !student.internships) return false;
-      if (activeFilterTab === 'Student council' && !student.clubOrCouncil?.toLowerCase().includes('council')) return false;
-      if (activeFilterTab === 'Core members' && !student.clubOrCouncil?.toLowerCase().includes('core')) return false;
-      if (activeFilterTab === 'OG OC' && !student.clubOrCouncil?.toLowerCase().match(/\b(og|oc)\b/)) return false;
+      if (activeFilterTab === 'Student council' && !student.clubOrCouncil) return false;
+      // if (activeFilterTab === 'Core members' && !student.clubOrCouncil?.toLowerCase().includes('core')) return false;
+      // if (activeFilterTab === 'OG OC' && !student.clubOrCouncil?.toLowerCase().match(/\b(og|oc)\b/)) return false;
 
       return true;
     });
@@ -99,7 +99,7 @@ export default function StudentList() {
       />
 
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 -mt-6">
-        
+
         {/* Horizontal Filters */}
         <div className="flex flex-wrap items-center gap-3 mb-8">
           {filterTabs.map(tab => {
@@ -108,11 +108,10 @@ export default function StudentList() {
               <button
                 key={tab.id}
                 onClick={() => setActiveFilterTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all ${
-                  isActive 
-                    ? 'bg-brand-black text-white border-brand-black shadow-md' 
-                    : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
-                }`}
+                className={`flex items-center gap-2 px-4 py-2 rounded-xl border transition-all ${isActive
+                  ? 'bg-brand-black text-white border-brand-black shadow-md'
+                  : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                  }`}
               >
                 <span className={isActive ? 'text-white' : 'text-gray-500'}>
                   {tab.icon}
@@ -135,7 +134,7 @@ export default function StudentList() {
                 {filteredStudents.length} profile{filteredStudents.length !== 1 ? 's' : ''} found
               </p>
             )}
-            
+
             {/* Search input */}
             <div className="relative w-64">
               <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
@@ -143,7 +142,7 @@ export default function StudentList() {
               </span>
               <input
                 type="text"
-                placeholder="Search..."
+                placeholder="Search by name, city, skills…"
                 value={searchInput}
                 onChange={(e) => setSearchInput(e.target.value)}
                 className="w-full pl-10 pr-8 py-2 rounded-xl border border-black/10 bg-white text-sm focus:border-primary-2 focus:ring-2 focus:ring-primary-1/30 transition-all"
@@ -176,7 +175,7 @@ export default function StudentList() {
                   key={`${student.id}-${index}`}
                   student={student}
                   onOpen={() => openModal(student)}
-                  onTagToggle={() => {}}
+                  onTagToggle={() => { }}
                   selectedTags={[]}
                 />
               ))}

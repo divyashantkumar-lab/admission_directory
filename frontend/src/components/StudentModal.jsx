@@ -30,7 +30,8 @@ import {
 export default function StudentModal({ student, onClose }) {
   const techs = parseTechTags(student.techStack);
   const photoUrl = driveToDirectImg(student.photo, 1000);
-  const [imgError, setImgError] = useState(false);
+  const [imgError, setImgError]   = useState(false);
+  const [imgLoaded, setImgLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
 
   // Close on Escape
@@ -46,9 +47,9 @@ export default function StudentModal({ student, onClose }) {
 
   const ytEmbed = getYouTubeEmbedUrl(student.youtube);
   const projectVideoEmbed =
-    student.projectVideo && student.projectVideo.includes('drive.google.com')
-      ? driveToEmbed(student.projectVideo)
-      : getYouTubeEmbedUrl(student.projectVideo);
+    student.projectVideoSem2 && student.projectVideoSem2.includes('drive.google.com')
+      ? driveToEmbed(student.projectVideoSem2)
+      : getYouTubeEmbedUrl(student.projectVideoSem2);
 
   const tabs = ['overview', 'projects'];
 
@@ -78,12 +79,24 @@ export default function StudentModal({ student, onClose }) {
             {/* Profile image */}
             <div className="shrink-0">
               {photoUrl && !imgError ? (
-                <img
-                  src={photoUrl}
-                  alt={student.name}
-                  onError={() => setImgError(true)}
-                  className="w-28 h-28 rounded-2xl object-cover ring-4 ring-primary-1/50 shadow-glow"
-                />
+                <div className="relative w-28 h-28">
+                  {/* Skeleton shimmer while loading */}
+                  {!imgLoaded && (
+                    <div
+                      aria-hidden="true"
+                      className="absolute inset-0 w-28 h-28 skeleton-dark"
+                    />
+                  )}
+                  <img
+                    src={photoUrl}
+                    alt={student.name}
+                    onLoad={() => setImgLoaded(true)}
+                    onError={() => setImgError(true)}
+                    className={`w-28 h-28 rounded-2xl object-cover ring-4 ring-primary-1/50 shadow-glow transition-opacity duration-300 ${
+                      imgLoaded ? 'opacity-100' : 'opacity-0'
+                    }`}
+                  />
+                </div>
               ) : (
                 <div className="w-[6rem] h-[7rem] rounded-2xl bg-gradient-to-br from-primary-1 to-primary-2 text-brand-black flex items-center justify-center font-extrabold text-4xl ring-4 ring-primary-1/50 shadow-glow">
                   {getInitials(student.name)}
@@ -92,11 +105,11 @@ export default function StudentModal({ student, onClose }) {
             </div>
             <div className="flex-1 min-w-0 text-center sm:text-left">
               <div className="flex flex-wrap gap-2 justify-center sm:justify-start mb-2">
-                {student.batch && (
+                {/* {student.batch && (
                   <span className="px-3 py-0.5 rounded-full bg-white/15 text-primary-1 text-xs font-bold border border-primary-1/30">
                     {student.batch}
                   </span>
-                )}
+                )} */}
                 {student.classOf && (
                   <span className="px-3 py-0.5 rounded-full bg-white/10 text-white/70 text-xs border border-white/20">
                     {student.classOf}
@@ -243,16 +256,20 @@ export default function StudentModal({ student, onClose }) {
                       <span className="text-xs text-gray-400 font-semibold">{student.projectTrackSem2}</span>
                     )}
                   </div>
+
                   <h3 className="text-lg font-extrabold text-brand-black">{student.projectTitleSem2}</h3>
+
                   {student.projectStackSem2 && (
-                    <p className="text-sm text-gray-500 mt-2 flex items-center"><WrenchIcon />{student.projectStackSem2}</p>
+                    <p className="text-sm text-gray-500 mt-2 flex items-center">{student.projectStackSem2}</p>
                   )}
+
                   <div className="flex gap-3 mt-3 flex-wrap">
                     {student.projectLinkSem2 && (
                       <a href={ensureHttps(student.projectLinkSem2)} target="_blank" rel="noopener noreferrer" className="btn-dark !py-1.5 !px-3 !text-xs">
                         <GlobeIcon />Live Demo
                       </a>
                     )}
+
                     {student.projectVideoSem2 && (
                       <a href={ensureHttps(student.projectVideoSem2)} target="_blank" rel="noopener noreferrer" className="btn-primary !py-1.5 !px-3 !text-xs">
                         <VideoIcon />Video
@@ -274,7 +291,7 @@ export default function StudentModal({ student, onClose }) {
                   </div>
                   <h3 className="text-lg font-extrabold text-brand-black">{student.projectTitleSem1}</h3>
                   {student.projectStackSem1 && (
-                    <p className="text-sm text-gray-500 mt-2 flex items-center"><WrenchIcon />{student.projectStackSem1}</p>
+                    <p className="text-sm text-gray-500 mt-2 flex items-center">{student.projectStackSem1}</p>
                   )}
                   <div className="flex gap-3 mt-3 flex-wrap">
                     {student.projectLinkSem1 && (
@@ -291,33 +308,53 @@ export default function StudentModal({ student, onClose }) {
                 </div>
               )}
 
-
-
               {/* Embedded project video */}
-              {(projectVideoEmbed || student.projectVideoSem1) && (
-                <div>
-                  <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center"><VideoIcon />Project Video</h3>
-                  <div className="rounded-2xl overflow-hidden aspect-video bg-black">
-                    <iframe
-                      src={projectVideoEmbed ||
-                        (student.projectVideoSem1?.includes('drive.google.com')
-                          ? driveToEmbed(student.projectVideoSem1)
-                          : getYouTubeEmbedUrl(student.projectVideoSem1))}
-                      title="Project demo"
-                      className="w-full h-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    />
+              {student.projectVideoSem2
+                ? (
+                  <div>
+                    <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center"><VideoIcon />Project Video</h3>
+                    <div className="rounded-2xl overflow-hidden aspect-video bg-black">
+                      <iframe
+                        src={projectVideoEmbed ||
+                          (student.projectVideoSem2?.includes('drive.google.com')
+                            ? driveToEmbed(student.projectVideoSem2)
+                            : getYouTubeEmbedUrl(student.projectVideoSem2))}
+                        title="Project demo"
+                        className="w-full h-full"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    </div>
                   </div>
-                </div>
-              )}
-
-              {!student.projectTitleSem1 && !student.projectTitleSem2 && !projectVideoEmbed && (
-                <div className="text-center py-12 text-gray-400">
-                  <InfoIcon />
-                  <p className="font-semibold text-sm">No project info available yet</p>
-                </div>
-              )}
+                )
+                : (
+                  student.projectVideoSem1
+                    ? (
+                      <div>
+                        <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3 flex items-center"><VideoIcon />Project Video</h3>
+                        <div className="rounded-2xl overflow-hidden aspect-video bg-black">
+                          <iframe
+                            src={projectVideoEmbed ||
+                              (student.projectVideoSem1?.includes('drive.google.com')
+                                ? driveToEmbed(student.projectVideoSem1)
+                                : getYouTubeEmbedUrl(student.projectVideoSem1))}
+                            title="Project demo"
+                            className="w-full h-full"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allowFullScreen
+                          />
+                        </div>
+                      </div>
+                    )
+                    :
+                    (
+                      <div className="text-center py-12 text-gray-400">
+                        <InfoIcon />
+                        <p className="font-semibold text-sm">No project info available yet</p>
+                      </div>
+                    )
+                )
+              }
             </div>
           )}
         </div>
