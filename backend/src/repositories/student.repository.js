@@ -16,12 +16,13 @@ function emailToId(email) {
 
 function normalizeRow(rawRow) {
   const normalized = {};
+  let c = 0;
   for (const [header, value] of Object.entries(rawRow)) {
     const trimmedHeader = header.trim();
     const key =
-      HEADER_MAP[header] ||
-      HEADER_MAP[trimmedHeader] ||
-      HEADER_MAP[header.replace(/\s+$/g, '')];
+    HEADER_MAP[header] ||
+    HEADER_MAP[trimmedHeader] ||
+    HEADER_MAP[header.replace(/\s+$/g, '')];
     if (key) {
       const valStr = String(value ?? '').trim();
       // Sanitize spreadsheet formula reference errors (#REF!)
@@ -69,7 +70,10 @@ async function readAllFromFile(filePath = STUDENT_DATA_PATH) {
 }
 
 async function readAll() {
-  return readAllFromFile(STUDENT_DATA_PATH);
+  const students = await readAllFromFile(STUDENT_DATA_PATH);
+  // console.log("Students: ", students[0]);
+
+  return students;
 }
 
 async function findById(id) {

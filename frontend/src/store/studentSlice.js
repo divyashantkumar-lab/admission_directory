@@ -17,6 +17,7 @@ export const fetchStudents = createAsyncThunk(
       if (params?.batch) query.batch = params.batch;
       if (params?.search) query.search = params.search;
       const { data } = await axiosInstance.get('/students', { params: query });
+      console.log(data)
       return data.data;
     } catch (err) {
       return rejectWithValue(

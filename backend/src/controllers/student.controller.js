@@ -11,7 +11,6 @@ function handleError(res, err) {
 async function list(req, res) {
   try {
     const { batch, search } = req.query;
-    console.log("search : ", search)
     const data = await studentService.list({ batch, search });
     return res.json({ success: true, data });
   } catch (err) {

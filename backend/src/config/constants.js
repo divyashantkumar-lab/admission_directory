@@ -19,8 +19,11 @@ const FRONTEND_ORIGINS = (
 
 const HEADER_MAP = {
   'Student Name': 'name',
-  Email: 'email',
-  Batch: 'batch',
+  "Email": 'email',
+  "email": 'email',
+  "Year": 'year',
+  "year": 'year',
+  "Batch": 'batch',
   'School Name': 'school',
   'Class XII %': 'class12',
   'Class X %': 'class10',
@@ -54,15 +57,15 @@ const HEADER_MAP = {
   // Profile metadata
   'Part of Club/ Student Council': 'clubOrCouncil',
   'Class of': 'classOf',
-  City: 'city',
-  State: 'state',
-  Age: 'age',
+  "City": 'city',
+  "State": 'state',
+  "Age": 'age',
   // Media
   'Project Vedio': 'projectVideo',
   'Project Video': 'projectVideo',
   'Resume': 'resume',
   // Experience
-  'Internships (All)': 'internships',
+  'Role (Internship)': 'internships',
   'OpenSource (Year)': 'openSource',
   'Org Name': 'orgName',
   // Sem 1 project
@@ -70,13 +73,13 @@ const HEADER_MAP = {
   'Project Title Sem 1': 'projectTitleSem1',
   'Project Tech Stack Used Sem 1': 'projectStackSem1',
   'Deployment Link Sem 1': 'projectLinkSem1',
-  'Vedio Sem 1': 'projectVideoSem1',
+  'Video Sem 1': 'projectVideoSem1',
   // Sem 2 project
   'Project Track Sem 2': 'projectTrackSem2',
   'Project Title Sem 2': 'projectTitleSem2',
   'Project Tech Stack Used Sem 2': 'projectStackSem2',
   'Deployment Link Sem 2': 'projectLinkSem2',
-  'Vedio Sem 2': 'projectVideoSem2',
+  'Video Sem 2': 'projectVideoSem2',
   // Tech
   'Tech Stack and Rating': 'techStack',
 };

@@ -56,7 +56,7 @@ function StatPill({ label, value, accent = 'primary' }) {
 export default function StudentModal({ student, onClose }) {
   const techs = parseTechTags(student.techStack);
   const photoUrl = driveToDirectImg(student.photo, 1000);
-  const [imgError, setImgError]   = useState(false);
+  const [imgError, setImgError] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
 
@@ -125,9 +125,8 @@ export default function StudentModal({ student, onClose }) {
                     alt={student.name}
                     onLoad={() => setImgLoaded(true)}
                     onError={() => setImgError(true)}
-                    className={`w-full h-full rounded-3xl object-cover ring-[3px] ring-primary-1/40 shadow-lg shadow-primary-1/20 transition-opacity duration-500 ${
-                      imgLoaded ? 'opacity-100' : 'opacity-0'
-                    }`}
+                    className={`w-full h-full rounded-3xl object-cover ring-[3px] ring-primary-1/40 shadow-lg shadow-primary-1/20 transition-opacity duration-500 ${imgLoaded ? 'opacity-100' : 'opacity-0'
+                      }`}
                   />
                 </div>
               ) : (
@@ -143,7 +142,7 @@ export default function StudentModal({ student, onClose }) {
               <div className="flex flex-wrap gap-2 justify-center sm:justify-start mb-3">
                 {student.classOf && (
                   <span className="px-3 py-1 rounded-full bg-white/[0.08] text-white/60 text-[11px] font-bold border border-white/[0.08] backdrop-blur-sm">
-                    Class of {student.classOf}
+                    {student.classOf}
                   </span>
                 )}
                 {student.clubOrCouncil && (
@@ -185,7 +184,7 @@ export default function StudentModal({ student, onClose }) {
           <div className="flex flex-wrap gap-2.5 mt-8">
             {student.class12 && <StatPill label="Class XII" value={`${student.class12}%`} />}
             {student.jeeMains && <StatPill label="JEE %ile" value={student.jeeMains} />}
-            {student.internships && <StatPill label="Internship" value="✓" accent="emerald" />}
+            {student.internships && <StatPill label="Internship" value={student.internships} accent="emerald" />}
             {student.openSource && (
               <StatPill
                 label="Open Source"
@@ -205,7 +204,7 @@ export default function StudentModal({ student, onClose }) {
               className={`relative px-5 py-3.5 text-sm font-bold transition-colors duration-200 ${activeTab === tab.id
                 ? 'text-brand-black'
                 : 'text-gray-400 hover:text-gray-600'
-              }`}
+                }`}
             >
               {tab.label}
               {/* Active indicator bar */}
@@ -286,7 +285,7 @@ export default function StudentModal({ student, onClose }) {
                     <RocketIcon />Startup
                   </a>
                 )}
-                {student.resume && (
+                {/* {student.resume && (
                   <a
                     href={ensureHttps(student.resume)}
                     target="_blank"
@@ -295,7 +294,7 @@ export default function StudentModal({ student, onClose }) {
                   >
                     <FileIcon />Resume
                   </a>
-                )}
+                )} */}
               </div>
             </div>
           )}
@@ -352,14 +351,16 @@ export default function StudentModal({ student, onClose }) {
             <div className="space-y-6">
 
               {/* Sem 2 project */}
-              {student.projectTitleSem2 && (
+              {student.projectTrackSem2 && (
                 <div className="relative rounded-2xl bg-white p-6 shadow-sm border border-gray-100/80 overflow-hidden group">
                   {/* Top accent bar */}
                   <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-primary-1 via-primary-2 to-primary-3" />
 
                   <div className="flex items-center gap-3 mb-4">
                     <span className="px-3 py-1 rounded-xl bg-gradient-to-r from-primary-1 to-primary-2 text-brand-black text-[10px] font-extrabold uppercase tracking-wider shadow-sm">
-                      Semester 2
+                      {
+                        student.year == 1 ? "Semester 2" : "Semester 4"
+                      }
                     </span>
                     {student.projectTrackSem2 && (
                       <span className="text-[11px] text-gray-400 font-semibold bg-gray-100 px-2.5 py-0.5 rounded-lg">
@@ -392,15 +393,18 @@ export default function StudentModal({ student, onClose }) {
               )}
 
               {/* Sem 1 project */}
-              {student.projectTitleSem1 && (
+              {student.projectTrackSem1 && (
                 <div className="relative rounded-2xl bg-white p-6 shadow-sm border border-gray-100/80 overflow-hidden group">
                   {/* Top accent bar */}
                   <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-brand-black via-brand-charcoal to-brand-muted" />
 
                   <div className="flex items-center gap-3 mb-4">
                     <span className="px-3 py-1 rounded-xl bg-brand-black text-primary-1 text-[10px] font-extrabold uppercase tracking-wider shadow-sm">
-                      Semester 1
+                      {
+                        student.year == 1 ? "Semester 1" : "Semester 3"
+                      }
                     </span>
+
                     {student.projectTrackSem1 && (
                       <span className="text-[11px] text-gray-400 font-semibold bg-gray-100 px-2.5 py-0.5 rounded-lg">
                         {student.projectTrackSem1}

@@ -4,6 +4,7 @@ function toCard(student) {
   return {
     id: student.id,
     name: student.name,
+    year: Number.parseInt(student.year),
     batch: student.batch,
     school: student.school,
     oneLiner: student.oneLiner,
@@ -27,7 +28,7 @@ function toCard(student) {
     resume: student.resume,
     internships: student.internships,
     openSource: student.openSource,
-    orgName: student.orgName,
+    // orgName: student.orgName,
     // Sem 1
     projectTrackSem1: student.projectTrackSem1,
     projectTitleSem1: student.projectTitleSem1,
@@ -67,7 +68,10 @@ async function list({ batch, search } = {}) {
     students = students.filter((s) => matchesSearch(s, search));
   }
   students.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-  return students.map(toCard);
+
+  const responseData = students.map(toCard);
+
+  return responseData;
 }
 
 async function getById(id) {
