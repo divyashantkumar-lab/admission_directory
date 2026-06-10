@@ -184,7 +184,7 @@ export default function StudentModal({ student, onClose }) {
           <div className="flex flex-wrap gap-2.5 mt-8">
             {student.class12 && <StatPill label="Class XII" value={`${student.class12}%`} />}
             {student.jeeMains && <StatPill label="JEE %ile" value={student.jeeMains} />}
-            {student.internships && <StatPill label="Internship" value={student.internships} accent="emerald" />}
+            {student.internshipRole && <StatPill label="Internship" value={student.internshipRole} accent="emerald" />}
             {student.openSource && (
               <StatPill
                 label="Open Source"
@@ -261,17 +261,17 @@ export default function StudentModal({ student, onClose }) {
               )}
 
               {/* Internships */}
-              {student.internships && (
+              {/* {(student.internshipRole || student.internshipCompany) && (
                 <div>
                   <SectionHeader icon={<BriefcaseIcon />}>Internships</SectionHeader>
                   <div className="relative text-gray-700 text-[13.5px] leading-[1.75] rounded-2xl p-5 shadow-sm border border-emerald-100/80 whitespace-pre-line overflow-hidden bg-gradient-to-br from-emerald-50/60 to-teal-50/30">
                     <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-emerald-400 to-teal-400 rounded-full" />
                     <div className="pl-3">
-                      {renderTextWithLinks(student.internships)}
+                      {renderTextWithLinks(student.internshipRole)}
                     </div>
                   </div>
                 </div>
-              )}
+              )} */}
 
               {/* Quick-action links */}
               <div className="flex flex-wrap gap-3 pt-1">

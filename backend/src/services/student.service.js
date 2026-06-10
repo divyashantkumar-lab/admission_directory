@@ -26,7 +26,8 @@ function toCard(student) {
     // project video (top-level drive/yt link)
     projectVideo: student.projectVideo,
     resume: student.resume,
-    internships: student.internships,
+    internshipRole: student.internshipRole,
+    internshipCompany: student.internshipCompany,
     openSource: student.openSource,
     // orgName: student.orgName,
     // Sem 1

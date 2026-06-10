@@ -44,7 +44,7 @@ export default function StudentList() {
     return {
       'All students': list.length,
       'Open source': list.filter(s => s.openSource).length,
-      'Internships': list.filter(s => s.internships).length,
+      'Internships': list.filter(s => (s.internshipRole || s.internshipCompany)).length,
       'Student council': list.filter(s => s.clubOrCouncil != "").length,
       // 'Core members': list.filter(s => s.clubOrCouncil?.toLowerCase().includes('core')).length,
       // 'OG OC': list.filter(s => s.clubOrCouncil?.toLowerCase().match(/\b(og|oc)\b/)).length,
@@ -81,7 +81,7 @@ export default function StudentList() {
       }
 
       if (activeFilterTab === 'Open source' && !student.openSource) return false;
-      if (activeFilterTab === 'Internships' && !student.internships) return false;
+      if (activeFilterTab === 'Internships' && !(student.internshipRole || student.internshipCompany)) return false;
       if (activeFilterTab === 'Student council' && !student.clubOrCouncil) return false;
       // if (activeFilterTab === 'Core members' && !student.clubOrCouncil?.toLowerCase().includes('core')) return false;
       // if (activeFilterTab === 'OG OC' && !student.clubOrCouncil?.toLowerCase().match(/\b(og|oc)\b/)) return false;

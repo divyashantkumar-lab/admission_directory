@@ -266,7 +266,7 @@ export function CardSkeleton() {
 export function StudentCard({ student, onOpen, onTagToggle, selectedTags = [] }) {
   const techs = parseTechTags(student.techStack, 3);
   const hasOpenSource = Boolean(student.openSource);
-  const hasInternship = Boolean(student.internships);
+  const hasInternship = Boolean(student.internshipRole || student.internshipCompany);
   const hasStartup = Boolean(student.startupLink);
 
   const class12 = student.class12;

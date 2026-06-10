@@ -65,7 +65,8 @@ const HEADER_MAP = {
   'Project Video': 'projectVideo',
   'Resume': 'resume',
   // Experience
-  'Role (Internship)': 'internships',
+  'Role (Internship)': 'internshipRole',
+  'Internships (company)': 'internshipCompany',
   'OpenSource (Year)': 'openSource',
   'Org Name': 'orgName',
   // Sem 1 project
@@ -84,49 +85,6 @@ const HEADER_MAP = {
   'Tech Stack and Rating': 'techStack',
 };
 
-const FIELD_TO_HEADER = {
-  name: 'Student Name',
-  email: 'Email',
-  batch: 'Batch',
-  school: 'School Name',
-  class12: 'Class XII %',
-  class10: 'Class X %',
-  jeeMains: 'JEE Mains %ile',
-  linkedin: 'LinkedIn Profile (URL)',
-  github: 'GitHub Profile (URL)',
-  youtube: 'YouTube Profile (URL)',
-  instagram: 'Instagram Profile (URL)',
-  twitter: 'X (Twitter) Profile (URL)',
-  oneLiner: 'One-liner Intro',
-  aboutYou: 'Anything else we should know about you?',
-  achievement: 'Achivement',
-  startupLink: 'Startup Link (URL)',
-  photo: 'Photo',
-  clubOrCouncil: 'Part of Club/ Student Council',
-  classOf: 'Class of',
-  city: 'City',
-  state: 'State',
-  age: 'Age',
-  projectVideo: 'Project Vedio',
-  resume: 'Resume',
-  internships: 'Internships (All)',
-  openSource: 'OpenSource (Year)',
-  orgName: 'Org Name',
-  projectTrackSem1: 'Project Track Sem 1',
-  projectTitleSem1: 'Project Title Sem 1',
-  projectStackSem1: 'Project Tech Stack Used Sem 1',
-  projectLinkSem1: 'Deployment Link Sem 1',
-  projectVideoSem1: 'Vedio Sem 1',
-  projectTrackSem2: 'Project Track Sem 2',
-  projectTitleSem2: 'Project Title Sem 2',
-  projectStackSem2: 'Project Tech Stack Used Sem 2',
-  projectLinkSem2: 'Deployment Link Sem 2',
-  projectVideoSem2: 'Vedio Sem 2',
-  techStack: 'Tech Stack and Rating',
-};
-
-const CSV_HEADERS = Object.values(FIELD_TO_HEADER);
-
 module.exports = {
   ROOT_DIR,
   DATA_DIR,
@@ -135,7 +93,5 @@ module.exports = {
   ACTIVE_DATA_FILE,
   STUDENT_DATA_PATH,
   FRONTEND_ORIGINS,
-  HEADER_MAP,
-  FIELD_TO_HEADER,
-  CSV_HEADERS,
+  HEADER_MAP
 };
