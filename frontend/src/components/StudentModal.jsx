@@ -426,7 +426,6 @@ export default function StudentModal({ student, onClose }) {
                 </div>
 
                 <div className="flex flex-col sm:flex-row gap-2 items-center justify-between pt-0.5 w-full">
-                  <p className="text-[11px] text-stone-400 text-center sm:text-left">Sandbox container preview issues?</p>
                   <a
                     href={ensureHttps(student.resume)}
                     target="_blank"
