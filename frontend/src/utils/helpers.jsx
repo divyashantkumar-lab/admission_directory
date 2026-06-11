@@ -2,15 +2,15 @@ import React from 'react';
 import { AttachmentIcon } from '../components/icons';
 
 export function ensureHttps(url) {
-  if (!url) return url;
-  const trimmed = url.trim();
-  if (/^https:\/\//i.test(trimmed)) {
-    return trimmed;
-  }
-  if (/^http:\/\//i.test(trimmed)) {
-    return trimmed.replace(/^http:\/\//i, 'https://');
-  }
-  return `https://${trimmed}`;
+    if (!url) return url;
+    const trimmed = url.trim();
+    if (/^https:\/\//i.test(trimmed)) {
+        return trimmed;
+    }
+    if (/^http:\/\//i.test(trimmed)) {
+        return trimmed.replace(/^http:\/\//i, 'https://');
+    }
+    return `https://${trimmed}`;
 }
 
 export function getInitials(name) {
@@ -99,9 +99,34 @@ export function driveToEmbed(url) {
 export function driveToDirectImg(url, width = 600) {
     if (!url) return null;
     const fileMatch = url.match(/\/file\/d\/([^/&?#]+)/);
-    if (fileMatch) return `https://drive.google.com/thumbnail?id=${fileMatch[1]}&sz=w${width}`;
+    // if (fileMatch) return `https://drive.google.com/thumbnail?id=${fileMatch[1]}&sz=w${width}`;
+    // if (fileMatch) return `https://drive.google.com/uc?export=view&id=${fileMatch[1]}`;
+    if (fileMatch) return `https:/lh3.googleusercontent.com/d/${fileMatch[1]}`;
+
     const openMatch = url.match(/[?&]id=([^&?#]+)/);
-    if (openMatch) return `https://drive.google.com/thumbnail?id=${openMatch[1]}&sz=w${width}`;
+    // if (openMatch) return `https://drive.google.com/thumbnail?id=${openMatch[1]}&sz=w${width}`;
+    // if (openMatch) return `https://drive.google.com/uc?export=view&id=${fileMatch[1]}`;
+    if (openMatch) return `https://lh3.googleusercontent.com/d/${fileMatch[1]}`;
+
+    return url;
+}
+
+export function driveToDirectVideo(url) {
+    if (!url) return null;
+    
+    // Extract the File ID from various Google Drive URL formats
+    const fileIdMatch = url.match(/(?:\/file\/d\/|id=)([a-zA-Z0-9_-]{25,35})/);
+    
+    if (fileIdMatch) {
+        const fileId = fileIdMatch[1];
+        
+        // Option A: Best for HTML5 <video> tags or direct streaming/downloading
+        return `https://docs.google.com/uc?export=download&id=${fileId}`;
+        
+        // Option B: Best for <iframe> src if you want the Google Drive video player interface
+        // return `https://drive.google.com/file/d/${fileId}/preview`;
+    }
+
     return url;
 }
 

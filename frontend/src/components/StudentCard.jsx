@@ -275,7 +275,7 @@ export function StudentCard({ student, onOpen, onTagToggle, selectedTags = [] })
   return (
     <article
       onClick={onOpen}
-      className="bg-white rounded-3xl border border-black/[0.04] p-5 flex flex-col justify-between h-[280px] cursor-pointer group hover:border-primary-2/30 hover:shadow-glow hover:-translate-y-1.5 transition-all duration-300 ease-out relative overflow-hidden shadow-sm"
+      className="bg-white rounded-3xl border border-black/[0.04] p-5 flex flex-col justify-between min-h-[280px] cursor-pointer group hover:border-primary-2/30 hover:shadow-glow hover:-translate-y-1.5 transition-all duration-300 ease-out relative overflow-hidden shadow-sm"
     >
       {/* Decorative hover gradient top-border */}
       <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-primary-1 via-primary-2 to-primary-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -285,10 +285,10 @@ export function StudentCard({ student, onOpen, onTagToggle, selectedTags = [] })
 
         {/* Header: avatar + name + metadata */}
         <div className="flex items-start justify-between gap-2 min-w-0 w-full">
-          <div className="flex items-center gap-3.5 min-w-0 flex-1 w-full">
+          <div className="flex items-center gap-2.5 min-w-0 flex-1 w-full">
             <Avatar
               student={student}
-              className="w-[30%] aspect-square rounded-full flex-shrink-0"
+              className="w-[35%] h-[35%] aspect-square rounded-full flex-shrink-0"
             />
             <div className="min-w-0 flex-1">
               <h2 className="font-extrabold text-brand-black text-[16px] leading-tight group-hover:text-primary-3 transition-colors truncate">
