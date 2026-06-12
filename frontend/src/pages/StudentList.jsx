@@ -40,22 +40,25 @@ export default function StudentList() {
     setActiveFilterTab('All students');
   }, []);
 
-  const counts = useMemo(() => {
-    return {
-      'All students': list.length,
-      'Open source': list.filter(s => s.openSource).length,
-      'Internships': list.filter(s => (s.internshipRole || s.internshipCompany)).length,
-      'Student council': list.filter(s => s.clubOrCouncil != "").length,
-      // 'Core members': list.filter(s => s.clubOrCouncil?.toLowerCase().includes('core')).length,
-      // 'OG OC': list.filter(s => s.clubOrCouncil?.toLowerCase().match(/\b(og|oc)\b/)).length,
-    };
-  }, [list]);
+  // const counts = useMemo(() => {
+  //   return {
+  //     'All students': list.length,
+  //     'Open source': list.filter(s => s.openSource).length,
+  //     'Internships': list.filter(s => (s.internshipRole || s.internshipCompany)).length,
+  //     'Student council': list.filter(s => s.clubOrCouncil != "").length,
+  //     // 'Core members': list.filter(s => s.clubOrCouncil?.toLowerCase().includes('core')).length,
+  //     // 'OG OC': list.filter(s => s.clubOrCouncil?.toLowerCase().match(/\b(og|oc)\b/)).length,
+  //   };
+  // }, [list]);
 
   const filterTabs = [
     { id: 'All students', label: 'All students', icon: <UsersIcon /> },
     { id: 'Open source', label: 'Open source', icon: <GitHubIcon /> },
     { id: 'Internships', label: 'Internships', icon: <BriefcaseIcon /> },
-    { id: 'Student council', label: 'Student council', icon: <StarIcon /> },
+    { id: 'Club Members', label: 'Club Members', icon: <StarIcon /> },
+    { id: 'Student Council', label: 'Student Council', icon: <StarIcon /> },
+    { id: 'Batch 2024', label: 'Batch 2024', icon: <StarIcon /> },
+    { id: 'Batch 2025', label: 'Batch 2025', icon: <StarIcon /> },
     // { id: 'Core members', label: 'Core members', icon: <CrownIcon /> },
     // { id: 'OG OC', label: 'OG OC', icon: <FlagIcon /> },
   ];
@@ -82,10 +85,13 @@ export default function StudentList() {
 
       if (activeFilterTab === 'Open source' && !student.openSource) return false;
       if (activeFilterTab === 'Internships' && !(student.internshipRole || student.internshipCompany)) return false;
-      if (activeFilterTab === 'Student council' && !student.clubOrCouncil) return false;
+      if (activeFilterTab === 'Club Members' && !student.club) return false;
+      if (activeFilterTab === 'Student Council' && !student.studentCouncil) return false;
+      if (activeFilterTab === 'Batch 2024' && (!student.classOf || !student.classOf.startsWith('2024'))) return false;
+      if (activeFilterTab === 'Batch 2025' && (!student.classOf || !student.classOf.startsWith('2025'))) return false;
       // if (activeFilterTab === 'Core members' && !student.clubOrCouncil?.toLowerCase().includes('core')) return false;
       // if (activeFilterTab === 'OG OC' && !student.clubOrCouncil?.toLowerCase().match(/\b(og|oc)\b/)) return false;
-
+      // classOf
       return true;
     });
   }, [list, searchInput, activeFilterTab]);

@@ -66,11 +66,18 @@ export function StudentCard({ student, onOpen, onTagToggle, selectedTags = [] })
               student={student}
               className="w-[35%] h-[35%] aspect-square rounded-full flex-shrink-0"
             />
+            {/* Batch badge absolute positioned */}
+            {student.classOf && (
+              <span className="absolute top-3 right-3 px-2.5 py-0.5 rounded-full bg-amber-400 text-white-300 text-[10px] font-medium tracking-wide shadow-sm">
+                {student.classOf.split(" ")[0]}
+              </span>
+            )}
             <div className="min-w-0 flex-1">
               <h2 className="font-extrabold text-brand-black text-[16px] leading-tight group-hover:text-primary-3 transition-colors truncate">
                 {student.name}
               </h2>
               <div className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 mt-1 text-gray-400 text-[11px] font-medium min-w-0">
+
                 {student.city && (
                   <span className="flex items-center gap-0.5 truncate max-w-[100px]">
                     <PinIcon />
@@ -78,14 +85,26 @@ export function StudentCard({ student, onOpen, onTagToggle, selectedTags = [] })
                   </span>
                 )}
                 {student.city && student.clubOrCouncil && <span className="text-gray-300">•</span>}
-                {student.clubOrCouncil && (
+                {student.studentCouncil && (
                   <span
                     className="flex items-center gap-0.5 text-primary-3 font-semibold max-w-[120px] min-w-0"
-                    title={student.clubOrCouncil}
+                    title={student.studentCouncil}
                   >
                     <AwardIcon className="w-3 h-3 text-primary-3 shrink-0 mr-0.5" />
-                    <span className="truncate">
-                      {student.clubOrCouncil}
+                    <span className="break-words">
+                      {student.studentCouncil}
+                    </span>
+                  </span>
+                )}
+                {student.city && student.clubOrCouncil && <span className="text-gray-300">•</span>}
+                {student.club && (
+                  <span
+                    className="flex items-center gap-0.5 text-primary-3 font-semibold max-w-[120px] min-w-0"
+                    title={student.club}
+                  >
+                    <AwardIcon className="w-3 h-3 text-primary-3 shrink-0 mr-0.5" />
+                    <span className="break-words">
+                      {student.club}
                     </span>
                   </span>
                 )}

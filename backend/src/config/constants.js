@@ -55,7 +55,8 @@ const HEADER_MAP = {
   'Startup Link (URL)': 'startupLink',
   'Photo': 'photo',
   // Profile metadata
-  'Part of Club/ Student Council': 'clubOrCouncil',
+  'Part of Club': "club",
+  'Student Council': 'studentCouncil',
   'Class of': 'classOf',
   "City": 'city',
   "State": 'state',

@@ -20,7 +20,8 @@ import {
   WrenchIcon,
   GlobeIcon,
   PlayIcon,
-  InfoIcon
+  InfoIcon,
+  VideoIcon,
 } from './icons';
 
 /* ─── Premium Modern Section Header ────────────────────────────────────── */
@@ -134,10 +135,16 @@ export default function StudentModal({ student, onClose }) {
                     {student.classOf}
                   </span>
                 )}
-                {student.clubOrCouncil && (
+                {student.studentCouncil && (
                   <span className="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 text-[10px] font-medium border border-amber-500/20 flex items-center gap-1 max-w-full truncate">
                     <AwardIcon className="w-3 h-3 shrink-0" />
-                    <span className="break-words">{student.clubOrCouncil}</span>
+                    <span className="break-words">{student.studentCouncil}</span>
+                  </span>
+                )}
+                {student.club && (
+                  <span className="px-2.5 py-0.5 rounded-full bg-amber-500/10 text-amber-400 text-[10px] font-medium border border-amber-500/20 flex items-center gap-1 max-w-full truncate">
+                    <AwardIcon className="w-3 h-3 shrink-0" />
+                    <span className="break-words">{student.club}</span>
                   </span>
                 )}
               </div>
@@ -332,7 +339,8 @@ export default function StudentModal({ student, onClose }) {
                       )}
                       {student.projectVideoSem2 && (
                         <a href={ensureHttps(student.projectVideoSem2)} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-red-50/50 hover:bg-red-50 text-red-700 text-xs font-semibold border border-red-100 transition-colors duration-150">
-                          <PlayIcon className="w-3 h-3 text-red-500" />Watch Demo
+                          
+                         <VideoIcon /> Watch Demo
                         </a>
                       )}
                     </div>
@@ -371,7 +379,7 @@ export default function StudentModal({ student, onClose }) {
                       )}
                       {student.projectVideoSem1 && (
                         <a href={ensureHttps(student.projectVideoSem1)} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-red-50/50 hover:bg-red-50 text-red-700 text-xs font-semibold border border-red-100 transition-colors duration-150">
-                          <PlayIcon className="w-3 h-3 text-red-500" />Watch Demo
+                          <VideoIcon /> Watch Demo
                         </a>
                       )}
                     </div>

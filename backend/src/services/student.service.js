@@ -20,7 +20,8 @@ function toCard(student) {
     achievement: student.achievement,
     startupLink: student.startupLink,
     photo: student.photo,
-    clubOrCouncil: student.clubOrCouncil,
+    club: student.club,
+    studentCouncil: student.studentCouncil,
     classOf: student.classOf,
     city: student.city,
     // project video (top-level drive/yt link)
