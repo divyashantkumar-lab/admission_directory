@@ -173,13 +173,13 @@ export default function StudentModal({ student, onClose }) {
 
           {/* Academic Stats Track Row */}
           <div className="grid grid-cols-2 gap-2 mt-6 w-full text-left">
-            {student.class12 && (
+            {(student.class12 && Number.parseInt(student.class12) > 85) && (
               <div className="px-3 py-2 rounded-xl bg-stone-900/40 border border-stone-800/80 flex flex-col justify-center min-w-0 w-full">
                 <p className="text-[9px] text-stone-500 uppercase tracking-wider font-bold truncate">Class XII</p>
                 <p className="text-sm font-bold mt-0.5 text-stone-200 truncate">{student.class12}%</p>
               </div>
             )}
-            {student.jeeMains && (
+            {(student.jeeMains && Number.parseInt(student.jeeMains) > 85) && (
               <div className="px-3 py-2 rounded-xl bg-stone-900/40 border border-stone-800/80 flex flex-col justify-center min-w-0 w-full">
                 <p className="text-[9px] text-stone-500 uppercase tracking-wider font-bold truncate">JEE %ile</p>
                 <p className="text-sm font-bold mt-0.5 text-stone-200 truncate">{student.jeeMains}</p>

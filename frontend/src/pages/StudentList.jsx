@@ -117,13 +117,11 @@ export default function StudentList() {
                   {tab.icon}
                 </span>
                 <span className="font-semibold text-sm">{tab.label}</span>
-                <span className={`text-xs font-bold ${isActive ? 'text-gray-300' : 'text-gray-400'}`}>
-                  {counts[tab.id]}
-                </span>
               </button>
             )
           })}
         </div>
+
 
         {/* ── STUDENT DIRECTORY LIST ───────────────────────────────────────── */}
         <div className="w-full">
@@ -131,7 +129,7 @@ export default function StudentList() {
           <div className="flex justify-between items-center mb-4">
             {!loading && (
               <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-                {filteredStudents.length} profile{filteredStudents.length !== 1 ? 's' : ''} found
+                profile{filteredStudents.length !== 1 ? 's' : ''} found
               </p>
             )}
 
