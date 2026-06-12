@@ -106,7 +106,7 @@ export function StudentCard({ student, onOpen, onTagToggle, selectedTags = [] })
                     className="flex items-center gap-0.5 text-primary-3 font-semibold max-w-[120px] min-w-0"
                     title={student.club}
                   >
-                    <ClubMembersIcong className="w-3 h-3 text-primary-3 shrink-0 mr-0.5" />
+                    <ClubMembersIcon className="w-3 h-3 text-primary-3 shrink-0 mr-0.5" />
                     <span className="break-words">
                       {student.club}
                     </span>
