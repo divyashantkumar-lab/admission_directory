@@ -13,7 +13,9 @@ import {
   FlagIcon,
   SearchIcon,
   CloseIcon,
-  EmptySearchIcon
+  EmptySearchIcon,
+  ClubMembersIcon,
+  StudentCouncilIcon,
 } from '../components/icons';
 
 export default function StudentList() {
@@ -55,8 +57,8 @@ export default function StudentList() {
     { id: 'All students', label: 'All students', icon: <UsersIcon /> },
     { id: 'Open source', label: 'Open source', icon: <GitHubIcon /> },
     { id: 'Internships', label: 'Internships', icon: <BriefcaseIcon /> },
-    { id: 'Club Members', label: 'Club Members', icon: <StarIcon /> },
-    { id: 'Student Council', label: 'Student Council', icon: <StarIcon /> },
+    { id: 'Club Members', label: 'Club Members', icon: <ClubMembersIcon/> },
+    { id: 'Student Council', label: 'Student Council', icon: <StudentCouncilIcon /> },
     { id: 'Batch 2024', label: 'Batch 2024', icon: <StarIcon /> },
     { id: 'Batch 2025', label: 'Batch 2025', icon: <StarIcon /> },
     // { id: 'Core members', label: 'Core members', icon: <CrownIcon /> },

@@ -7,7 +7,9 @@ import {
   GitHubIcon,
   BriefcaseIcon,
   RocketIcon,
-  LinkedInIcon
+  LinkedInIcon,
+  ClubMembersIcon,
+  StudentCouncilIcon
 } from './icons';
 
 export function CardSkeleton() {
@@ -84,25 +86,27 @@ export function StudentCard({ student, onOpen, onTagToggle, selectedTags = [] })
                     {student.city.toLowerCase().replace(/(^\w|\b\w)/g, char => char.toUpperCase())}
                   </span>
                 )}
-                {student.city && student.clubOrCouncil && <span className="text-gray-300">•</span>}
+
+
                 {student.studentCouncil && (
                   <span
                     className="flex items-center gap-0.5 text-primary-3 font-semibold max-w-[120px] min-w-0"
                     title={student.studentCouncil}
                   >
-                    <AwardIcon className="w-3 h-3 text-primary-3 shrink-0 mr-0.5" />
+                    <StudentCouncilIcon className="w-3 h-3 text-primary-3 shrink-0 mr-0.5" />
                     <span className="break-words">
                       {student.studentCouncil}
                     </span>
                   </span>
                 )}
-                {student.city && student.clubOrCouncil && <span className="text-gray-300">•</span>}
+
+
                 {student.club && (
                   <span
                     className="flex items-center gap-0.5 text-primary-3 font-semibold max-w-[120px] min-w-0"
                     title={student.club}
                   >
-                    <AwardIcon className="w-3 h-3 text-primary-3 shrink-0 mr-0.5" />
+                    <ClubMembersIcong className="w-3 h-3 text-primary-3 shrink-0 mr-0.5" />
                     <span className="break-words">
                       {student.club}
                     </span>
