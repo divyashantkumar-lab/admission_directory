@@ -22,6 +22,7 @@ import {
   PlayIcon,
   InfoIcon,
   VideoIcon,
+  BriefcaseIcon
 } from './icons';
 
 /* ─── Premium Modern Section Header ────────────────────────────────────── */
@@ -71,8 +72,28 @@ export default function StudentModal({ student, onClose }) {
   const tabs = [
     { id: 'overview', label: 'Overview' },
     { id: 'projects', label: 'Projects' },
-    ...(student.resume ? [{ id: 'resume', label: 'Resume' }] : []),
+    // ...(student.resume ? [{ id: 'resume', label: 'Resume' }] : []),
   ];
+
+
+  function MapInternshipWithRole({ student }) {
+    const internshipRoles = student.internshipRole.split(",").map(role => role.trim())
+    const internshipCompanies = student.internshipCompany.split(",").map(company => company.trim())
+
+    return Array.isArray(internshipRoles) && internshipRoles.map((role, index) => {
+      return (
+        <div key={index} className="flex items-center justify-between">
+          <div>
+            <h4 className="text-sm font-medium">
+              {role} at
+              <span className="font-bold text-md text-stone-500"> {internshipCompanies[index]}</span>
+            </h4>
+
+          </div>
+        </div>
+      );
+    });
+  }
 
   return (
     <div
@@ -263,6 +284,16 @@ export default function StudentModal({ student, onClose }) {
                     </div>
                   )}
 
+                  {(student?.internshipCompany || student?.internshipRole) && (
+                    <div className="w-full min-w-0">
+                      <SectionHeader icon={<BriefcaseIcon className="w-4 h-4" />}>Internship</SectionHeader>
+                      <div className="relative text-stone-700 text-[13px] sm:text-[13.5px] leading-relaxed rounded-xl p-4 border border-amber-200/40 bg-amber-50/20 text-left w-full break-words whitespace-pre-line shadow-sm font-normal tracking-wide">
+                        <MapInternshipWithRole student={student} />
+                      </div>
+                    </div>
+                  )}
+
+
                   {student.achievement && (
                     <div className="w-full min-w-0">
                       <SectionHeader icon={<TrophyIcon className="w-4 h-4" />}>Achievements</SectionHeader>
@@ -339,8 +370,8 @@ export default function StudentModal({ student, onClose }) {
                       )}
                       {student.projectVideoSem2 && (
                         <a href={ensureHttps(student.projectVideoSem2)} target="_blank" rel="noopener noreferrer" className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-red-50/50 hover:bg-red-50 text-red-700 text-xs font-semibold border border-red-100 transition-colors duration-150">
-                          
-                         <VideoIcon /> Watch Demo
+
+                          <VideoIcon /> Watch Demo
                         </a>
                       )}
                     </div>
@@ -412,7 +443,7 @@ export default function StudentModal({ student, onClose }) {
             )}
 
             {/* ─── TAB CONTENT: RESUME PREVIEW ─── */}
-            {activeTab === 'resume' && student.resume && (
+            {/* {activeTab === 'resume' && student.resume && (
               <div className="h-full flex flex-col space-y-4 w-full min-w-0">
                 <SectionHeader icon={<FileIcon className="w-4 h-4" />}>Resume Document</SectionHeader>
 
@@ -444,7 +475,7 @@ export default function StudentModal({ student, onClose }) {
                   </a>
                 </div>
               </div>
-            )}
+            )} */}
           </div>
         </div>
 
