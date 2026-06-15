@@ -13,6 +13,7 @@ import {
   AwardIcon,
   LinkedInIcon,
   GitHubIcon,
+  YouTubeIcon,
   TrophyIcon,
   CodeIcon,
   RocketIcon,
@@ -190,9 +191,16 @@ export default function StudentModal({ student, onClose }) {
                     <LinkedInIcon className="w-3.5 h-3.5" />
                   </a>
                 )}
+                
                 {student.github && (
                   <a href={ensureHttps(student.github)} target="_blank" rel="noopener noreferrer" className="w-7 h-7 rounded-lg bg-stone-900 hover:bg-stone-850 border border-stone-800 flex items-center justify-center text-stone-400 hover:text-white transition-colors duration-150" title="Explore GitHub Repository">
                     <GitHubIcon className="w-3.5 h-3.5" />
+                  </a>
+                )}
+
+                {student.youtube && (
+                  <a href={ensureHttps(student.youtube)} target="_blank" rel="noopener noreferrer" className="w-7 h-7 rounded-lg bg-stone-900 hover:bg-stone-850 border border-stone-800 flex items-center justify-center text-stone-400 hover:text-white transition-colors duration-150" title="Explore YouTube Channel">
+                    <YouTubeIcon className="w-3.5 h-3.5" />
                   </a>
                 )}
               </div>

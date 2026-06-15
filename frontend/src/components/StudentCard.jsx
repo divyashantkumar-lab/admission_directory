@@ -4,6 +4,7 @@ import { parseTechTags, ensureHttps } from '../utils/helpers';
 import {
   PinIcon,
   AwardIcon,
+  YouTubeIcon,
   GitHubIcon,
   BriefcaseIcon,
   RocketIcon,
@@ -223,6 +224,19 @@ export function StudentCard({ student, onOpen, onTagToggle, selectedTags = [] })
                 title="GitHub"
               >
                 <GitHubIcon />
+              </a>
+            )}
+
+            {student?.youtube && (
+              <a
+                href={ensureHttps(student.youtube)}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => e.stopPropagation()}
+                className="text-gray-400 hover:text-brand-black transition-colors"
+                title="YouTube"
+              >
+                <YouTubeIcon />
               </a>
             )}
           </div>
