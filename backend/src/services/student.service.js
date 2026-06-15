@@ -43,6 +43,7 @@ function toCard(student) {
     projectStackSem2: student.projectStackSem2,
     projectLinkSem2: student.projectLinkSem2,
     projectVideoSem2: student.projectVideoSem2,
+    profilePicture: student.profilePicture
   };
 }
 

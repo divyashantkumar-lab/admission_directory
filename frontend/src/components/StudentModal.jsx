@@ -37,7 +37,7 @@ function SectionHeader({ icon, children }) {
 
 export default function StudentModal({ student, onClose }) {
   const techs = parseTechTags(student.techStack);
-  const photoUrl = driveToDirectImg(student.photo, 1000);
+  const photoUrl = driveToDirectImg(student.profilePicture, 1000);
 
   const [imgError, setImgError] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);

@@ -11,7 +11,8 @@ export default function Avatar({ student, size = 'md', className = "", onLoad })
     lg: 'w-32 h-32 text-4xl',
   };
 
-  const photoUrl = driveToDirectImg(student.photo);
+  console.log(student.profilePicture)
+  const photoUrl = driveToDirectImg(student.profilePicture);
 
   // Added opacity transitions to smoothly fade in the image once loaded
   const finalClassName = mergeClasses(

@@ -84,6 +84,7 @@ const HEADER_MAP = {
   'Video Sem 2': 'projectVideoSem2',
   // Tech
   'Tech Stack and Rating': 'techStack',
+  "CDN Link": "profilePicture"
 };
 
 module.exports = {
