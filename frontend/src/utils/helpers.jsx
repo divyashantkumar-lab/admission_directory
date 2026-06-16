@@ -99,14 +99,10 @@ export function driveToEmbed(url) {
 export function driveToDirectImg(url, width = 600) {
     if (!url) return null;
     const fileMatch = url.match(/\/file\/d\/([^/&?#]+)/);
-    // if (fileMatch) return `https://drive.google.com/thumbnail?id=${fileMatch[1]}&sz=w${width}`;
-    // if (fileMatch) return `https://drive.google.com/uc?export=view&id=${fileMatch[1]}`;
-    if (fileMatch) return `https:/lh3.googleusercontent.com/d/${fileMatch[1]}`;
+    if (fileMatch) return `https://lh3.googleusercontent.com/d/${fileMatch[1]}=s${width}`;
 
     const openMatch = url.match(/[?&]id=([^&?#]+)/);
-    // if (openMatch) return `https://drive.google.com/thumbnail?id=${openMatch[1]}&sz=w${width}`;
-    // if (openMatch) return `https://drive.google.com/uc?export=view&id=${fileMatch[1]}`;
-    if (openMatch) return `https://lh3.googleusercontent.com/d/${fileMatch[1]}`;
+    if (openMatch) return `https://lh3.googleusercontent.com/d/${openMatch[1]}=s${width}`;
 
     return url;
 }

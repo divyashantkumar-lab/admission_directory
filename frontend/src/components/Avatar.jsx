@@ -11,7 +11,12 @@ export default function Avatar({ student, size = 'md', className = "", onLoad })
     lg: 'w-32 h-32 text-4xl',
   };
 
-  const photoUrl = driveToDirectImg(student.profilePicture);
+  const widthMap = {
+    sm: 120,
+    md: 120,
+    lg: 300,
+  };
+  const photoUrl = driveToDirectImg(student.profilePicture, widthMap[size] || 120);
 
   // Added opacity transitions to smoothly fade in the image once loaded
   const finalClassName = mergeClasses(
@@ -40,6 +45,7 @@ export default function Avatar({ student, size = 'md', className = "", onLoad })
         <img
           src={photoUrl}
           alt={student.name}
+          loading="lazy"
           onLoad={() => {
             setIsLoaded(true);
             if (onLoad) onLoad(); // Fire the parent's optional callback if passed

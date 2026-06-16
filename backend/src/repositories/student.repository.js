@@ -69,11 +69,22 @@ async function readAllFromFile(filePath = STUDENT_DATA_PATH) {
   throw new Error(`Unsupported file extension: ${ext}`);
 }
 
-async function readAll() {
-  const students = await readAllFromFile(STUDENT_DATA_PATH);
-  // console.log("Students: ", students[0]);
+let cachedStudents = null;
+let lastMtime = 0;
 
-  return students;
+async function readAll() {
+  try {
+    const stat = fs.statSync(STUDENT_DATA_PATH);
+    const mtime = stat.mtimeMs;
+    if (!cachedStudents || mtime !== lastMtime) {
+      cachedStudents = await readAllFromFile(STUDENT_DATA_PATH);
+      lastMtime = mtime;
+    }
+    return cachedStudents;
+  } catch (error) {
+    console.error('Error reading student data file:', error);
+    return readAllFromFile(STUDENT_DATA_PATH);
+  }
 }
 
 async function findById(id) {

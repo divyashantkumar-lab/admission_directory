@@ -54,6 +54,7 @@ export function StudentCard({ student, onOpen, onTagToggle, selectedTags = [] })
   return (
     <article
       onClick={onOpen}
+      style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 280px' }}
       className="bg-white rounded-3xl border border-black/[0.04] p-5 flex flex-col justify-between min-h-[280px] cursor-pointer group hover:border-primary-2/30 hover:shadow-glow hover:-translate-y-1.5 transition-all duration-300 ease-out relative overflow-hidden shadow-sm"
     >
       {/* Decorative hover gradient top-border */}

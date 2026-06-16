@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import SEOMeta from '../components/SEOMeta';
 import { fetchStudents } from '../store/studentSlice';
@@ -98,6 +98,34 @@ export default function StudentList() {
     });
   }, [list, searchInput, activeFilterTab]);
 
+  const [visibleCount, setVisibleCount] = useState(16);
+
+  // Reset pagination when search queries or filters change
+  useEffect(() => {
+    setVisibleCount(16);
+  }, [searchInput, activeFilterTab]);
+
+  const visibleStudents = useMemo(() => {
+    return filteredStudents.slice(0, visibleCount);
+  }, [filteredStudents, visibleCount]);
+
+  const loadMoreRef = useRef(null);
+
+  useEffect(() => {
+    if (!loadMoreRef.current) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setVisibleCount((prev) => Math.min(prev + 16, filteredStudents.length));
+        }
+      },
+      { threshold: 0.1, rootMargin: '200px' }
+    );
+    
+    observer.observe(loadMoreRef.current);
+    return () => observer.disconnect();
+  }, [filteredStudents.length]);
+
   return (
     <>
       <SEOMeta
@@ -175,33 +203,41 @@ export default function StudentList() {
               {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => <CardSkeleton key={n} />)}
             </div>
           ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-              {filteredStudents.map((student, index) => (
-                <StudentCard
-                  key={`${student.id}-${index}`}
-                  student={student}
-                  onOpen={() => openModal(student)}
-                  onTagToggle={() => { }}
-                  selectedTags={[]}
-                />
-              ))}
+            <>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                {visibleStudents.map((student, index) => (
+                  <StudentCard
+                    key={`${student.id}-${index}`}
+                    student={student}
+                    onOpen={() => openModal(student)}
+                    onTagToggle={() => { }}
+                    selectedTags={[]}
+                  />
+                ))}
 
-              {filteredStudents.length === 0 && (
-                <div className="col-span-full text-center py-20 card-surface bg-white/50">
-                  <EmptySearchIcon />
-                  <p className="text-brand-black font-extrabold text-lg">No profiles found</p>
-                  <p className="text-gray-500 text-sm mt-1 max-w-sm mx-auto">
-                    No student matches the search query.
-                  </p>
-                  <button
-                    onClick={handleClearAll}
-                    className="mt-5 btn-primary !py-2 !px-5 !text-xs font-bold"
-                  >
-                    Clear Search
-                  </button>
+                {filteredStudents.length === 0 && (
+                  <div className="col-span-full text-center py-20 card-surface bg-white/50">
+                    <EmptySearchIcon />
+                    <p className="text-brand-black font-extrabold text-lg">No profiles found</p>
+                    <p className="text-gray-500 text-sm mt-1 max-w-sm mx-auto">
+                      No student matches the search query.
+                    </p>
+                    <button
+                      onClick={handleClearAll}
+                      className="mt-5 btn-primary !py-2 !px-5 !text-xs font-bold"
+                    >
+                      Clear Search
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {filteredStudents.length > visibleCount && (
+                <div ref={loadMoreRef} className="col-span-full flex justify-center py-8 mt-6">
+                  <div className="w-6 h-6 border-2 border-brand-black/30 border-t-brand-black rounded-full animate-spin" />
                 </div>
               )}
-            </div>
+            </>
           )}
         </div>
       </section>
