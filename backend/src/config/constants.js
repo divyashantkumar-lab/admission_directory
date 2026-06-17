@@ -45,12 +45,12 @@ const HEADER_MAP = {
   // One-liner – trailing-space variants
   'One-liner Intro': 'oneLiner',
   'One-liner Intro ': 'oneLiner',
-  // About / achievement
+  // About / achievements
   'Anything else we should know about you?': 'aboutYou',
   'Anything else we should know about you?  ': 'aboutYou',
   'Anything else we should know about you? ': 'aboutYou',
-  'Achivement': 'achievement',
-  'Achievement': 'achievement',
+  'Achivement': 'achievements',
+  'Achievement': 'achievements',
   // Links
   'Startup Link (URL)': 'startupLink',
   'Photo': 'photo',

@@ -17,7 +17,7 @@ function toCard(student) {
     instagram: student.instagram,
     twitter: student.twitter,
     aboutYou: student.aboutYou,
-    achievement: student.achievement,
+    achievements: student.achievements,
     startupLink: student.startupLink,
     photo: student.photo,
     club: student.club,

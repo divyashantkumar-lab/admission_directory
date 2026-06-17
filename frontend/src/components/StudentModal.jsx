@@ -268,7 +268,7 @@ export default function StudentModal({ student, onClose }) {
           >
             {/* ─── TAB CONTENT: OVERVIEW ─── */}
             {activeTab === 'overview' && (
-              (!student.aboutYou && !student.achievement && techs.length === 0 && !student.startupLink) ? (
+              (!student.aboutYou && !student.achievements && techs.length === 0 && !student.startupLink) ? (
                 <div className="text-center py-16 px-4 bg-stone-50/30 rounded-2xl border border-stone-100/80 w-full max-w-md mx-auto flex flex-col items-center justify-center space-y-3">
                   <div className="p-3 bg-stone-100 text-stone-400 rounded-full">
                     <InfoIcon className="w-6 h-6 stroke-[1.5]" />
@@ -301,11 +301,20 @@ export default function StudentModal({ student, onClose }) {
                   )}
 
 
-                  {student.achievement && (
+                  {student.achievements && (
                     <div className="w-full min-w-0">
-                      <SectionHeader icon={<TrophyIcon className="w-4 h-4" />}>Achievements</SectionHeader>
+                      <SectionHeader icon={<TrophyIcon className="w-4 h-4" />}>achievements</SectionHeader>
                       <div className="relative text-stone-700 text-[13px] sm:text-[13.5px] leading-relaxed rounded-xl p-4 border border-amber-200/40 bg-amber-50/20 text-left w-full break-words whitespace-pre-line shadow-sm font-normal tracking-wide">
-                        {renderTextWithLinks(student.achievement)}
+                      {student?.achievements?.split("\n").length > 1 ? (
+                      <ul className="list-disc space-y-2 pl-5">
+                        {
+                          student?.achievements?.split("\n").map((achievement, index) => (
+                            <li key={index}>{achievement}</li>
+                          ))
+                        }
+                      </ul>) : (
+                        <p>{student.achievements}</p>
+                      )}
                       </div>
                     </div>
                   )}
