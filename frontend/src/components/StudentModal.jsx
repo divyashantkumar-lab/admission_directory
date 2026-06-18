@@ -243,7 +243,7 @@ export default function StudentModal({ student, onClose }) {
         <div className="flex-1 flex flex-col min-w-0 bg-[#FCFCFB] lg:overflow-hidden w-full">
 
           {/* Ledger Floating Nav Tab Bar */}
-          <div className="flex border-b border-stone-200/80 shrink-0 px-4 sm:px-6 bg-stone-50/50 z-10 sticky top-0 lg:relative w-full overflow-x-auto scrollbar-none">
+          <div className="h-[65px] flex border-b border-stone-200/80 shrink-0 px-4 sm:px-6 bg-stone-50/50 z-10 sticky top-0 lg:relative w-full overflow-x-auto scrollbar-none">
             <div className="flex min-w-max lg:min-w-0 gap-2">
               {tabs.map((tab) => (
                 <button
