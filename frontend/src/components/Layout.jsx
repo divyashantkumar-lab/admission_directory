@@ -20,7 +20,7 @@ export default function Layout({ children }) {
         </div>
       </header>
 
-      <main className="flex-1">{children}</main>
+      <main className="flex-1" style={{backgroundColor: "#e8873dff"}}>{children}</main>
 
 
       <footer className="bg-brand-black border-t border-primary-1/20 text-white/70 py-10 mt-auto">

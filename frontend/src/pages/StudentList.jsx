@@ -164,7 +164,7 @@ export default function StudentList() {
           {/* Results metadata */}
           <div className="flex justify-between items-center mb-4">
             {!loading && (
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+              <p className="text-xs font-bold text-black uppercase tracking-wider">
                 profile{filteredStudents.length !== 1 ? 's' : ''} found
               </p>
             )}

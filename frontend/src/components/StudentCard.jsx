@@ -80,12 +80,13 @@ export function StudentCard({ student, onOpen, onTagToggle, selectedTags = [] })
                 </span>
               )}
               <div className="min-w-0 flex-1">
-                <h2 className="font-extrabold text-center text-brand-black text-[16px] leading-tight group-hover:text-primary-3 transition-colors truncate">
+                <h2 className="font-extrabold text-center text-brand-black text-[16px] leading-tight group-hover:text-primary-3 transition-colors truncate pb-1">
                   {student.name}
                 </h2>
+
                 <div className="flex flex-col flex-wrap items-center justify-center gap-x-1.5 gap-y-0.5 mt-1 text-gray-400 text-[11px] font-medium min-w-0">
 
-                  <div>
+                  <div className="pb-1">
                     {student.city && (
                       <span className="flex text-slate-500 items-center gap-0.5 truncate max-w-[100px]">
                         <PinIcon />
@@ -94,7 +95,7 @@ export function StudentCard({ student, onOpen, onTagToggle, selectedTags = [] })
                     )}
                   </div>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-col items-center gap-2">
                     {student.studentCouncil && (
                       <span
                         className="flex items-center gap-0.5 text-primary-3 font-semibold max-w-[250px] min-w-0"
