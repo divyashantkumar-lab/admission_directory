@@ -54,8 +54,8 @@ export function StudentCard({ student, onOpen, onTagToggle, selectedTags = [] })
   return (
     <article
       onClick={onOpen}
-      style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 280px' }}
-      className="bg-secondary-1 rounded-3xl border border-black/[0.06] p-5 flex flex-col justify-between min-h-[280px] cursor-pointer group hover:border-primary-2/30 hover:shadow-glow hover:-translate-y-1.5 transition-all duration-300 ease-out relative overflow-hidden shadow-sm"
+      style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 280px', backgroundColor: "#f9f1d0" }}
+      className="rounded-3xl border border-black/[0.06] p-5 flex flex-col justify-between min-h-[280px] cursor-pointer group hover:border-primary-2/30 hover:shadow-glow hover:-translate-y-1.5 transition-all duration-300 ease-out relative overflow-hidden shadow-sm"
     >
       {/* Decorative hover gradient top-border */}
       <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-primary-1 via-primary-2 to-primary-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -167,7 +167,7 @@ export function StudentCard({ student, onOpen, onTagToggle, selectedTags = [] })
             </span>
           )}
           {!hasOpenSource && !hasInternship && !hasStartup && (
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-amber-200 text-black text-[9px] font-medium border border-gray-100 shadow-sm">
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-amber-200 text-black text-[9px] font-medium border border-[#ffd732] shadow-sm">
               Independent Builder
             </span>
           )}
@@ -185,7 +185,7 @@ export function StudentCard({ student, onOpen, onTagToggle, selectedTags = [] })
                     e.stopPropagation();
                     onTagToggle(t);
                   }}
-                  className={`px-2 py-0.5 rounded-md text-[9px] font-bold transition-all duration-200 cursor-pointer ${isActive
+                  className={`border border-[#d5e4f9] px-2 py-0.5 rounded-md text-[9px] font-bold transition-all duration-200 cursor-pointer ${isActive
                     ? 'bg-primary-2 text-white shadow-sm ring-1 ring-primary-3/30'
                     : 'bg-gray-100 text-black hover:bg-primary-1/20 hover:text-brand-black'
                     }`}

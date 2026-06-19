@@ -5,7 +5,7 @@ export default function Layout({ children }) {
     <div className="min-h-screen flex flex-col">
       <header className="bg-brand-black border-b border-primary-1/20 shadow-lg sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-wrap items-center justify-between gap-4">
-          
+
           <nav className="flex items-center gap-6 flex-wrap" aria-label="Main navigation">
             <NavLink
               to="/"
@@ -20,7 +20,7 @@ export default function Layout({ children }) {
         </div>
       </header>
 
-      <main className="flex-1" style={{backgroundColor: "#e8873dff"}}>{children}</main>
+      <main className="flex-1" style={{ backgroundColor: "#f9f6ea" }}>{children}</main>
 
 
       <footer className="bg-brand-black border-t border-primary-1/20 text-white/70 py-10 mt-auto">
