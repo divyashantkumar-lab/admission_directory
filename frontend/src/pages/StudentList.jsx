@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo, useCallback } from 'react';
+import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import SEOMeta from '../components/SEOMeta';
 import { fetchStudents } from '../store/studentSlice';
@@ -13,7 +13,9 @@ import {
   FlagIcon,
   SearchIcon,
   CloseIcon,
-  EmptySearchIcon
+  EmptySearchIcon,
+  ClubMembersIcon,
+  StudentCouncilIcon,
 } from '../components/icons';
 
 export default function StudentList() {
@@ -40,22 +42,25 @@ export default function StudentList() {
     setActiveFilterTab('All students');
   }, []);
 
-  const counts = useMemo(() => {
-    return {
-      'All students': list.length,
-      'Open source': list.filter(s => s.openSource).length,
-      'Internships': list.filter(s => (s.internshipRole || s.internshipCompany)).length,
-      'Student council': list.filter(s => s.clubOrCouncil != "").length,
-      // 'Core members': list.filter(s => s.clubOrCouncil?.toLowerCase().includes('core')).length,
-      // 'OG OC': list.filter(s => s.clubOrCouncil?.toLowerCase().match(/\b(og|oc)\b/)).length,
-    };
-  }, [list]);
+  // const counts = useMemo(() => {
+  //   return {
+  //     'All students': list.length,
+  //     'Open source': list.filter(s => s.openSource).length,
+  //     'Internships': list.filter(s => (s.internshipRole || s.internshipCompany)).length,
+  //     'Student council': list.filter(s => s.clubOrCouncil != "").length,
+  //     // 'Core members': list.filter(s => s.clubOrCouncil?.toLowerCase().includes('core')).length,
+  //     // 'OG OC': list.filter(s => s.clubOrCouncil?.toLowerCase().match(/\b(og|oc)\b/)).length,
+  //   };
+  // }, [list]);
 
   const filterTabs = [
     { id: 'All students', label: 'All students', icon: <UsersIcon /> },
     { id: 'Open source', label: 'Open source', icon: <GitHubIcon /> },
     { id: 'Internships', label: 'Internships', icon: <BriefcaseIcon /> },
-    { id: 'Student council', label: 'Student council', icon: <StarIcon /> },
+    { id: 'Club Members', label: 'Club Members', icon: <ClubMembersIcon/> },
+    { id: 'Student Council', label: 'Student Council', icon: <StudentCouncilIcon /> },
+    { id: 'Batch 2024', label: 'Batch 2024', icon: <StarIcon /> },
+    { id: 'Batch 2025', label: 'Batch 2025', icon: <StarIcon /> },
     // { id: 'Core members', label: 'Core members', icon: <CrownIcon /> },
     // { id: 'OG OC', label: 'OG OC', icon: <FlagIcon /> },
   ];
@@ -82,13 +87,44 @@ export default function StudentList() {
 
       if (activeFilterTab === 'Open source' && !student.openSource) return false;
       if (activeFilterTab === 'Internships' && !(student.internshipRole || student.internshipCompany)) return false;
-      if (activeFilterTab === 'Student council' && !student.clubOrCouncil) return false;
+      if (activeFilterTab === 'Club Members' && !student.club) return false;
+      if (activeFilterTab === 'Student Council' && !student.studentCouncil) return false;
+      if (activeFilterTab === 'Batch 2024' && (!student.classOf || !student.classOf.startsWith('2024'))) return false;
+      if (activeFilterTab === 'Batch 2025' && (!student.classOf || !student.classOf.startsWith('2025'))) return false;
       // if (activeFilterTab === 'Core members' && !student.clubOrCouncil?.toLowerCase().includes('core')) return false;
       // if (activeFilterTab === 'OG OC' && !student.clubOrCouncil?.toLowerCase().match(/\b(og|oc)\b/)) return false;
-
+      // classOf
       return true;
     });
   }, [list, searchInput, activeFilterTab]);
+
+  const [visibleCount, setVisibleCount] = useState(16);
+
+  // Reset pagination when search queries or filters change
+  useEffect(() => {
+    setVisibleCount(16);
+  }, [searchInput, activeFilterTab]);
+
+  const visibleStudents = useMemo(() => {
+    return filteredStudents.slice(0, visibleCount);
+  }, [filteredStudents, visibleCount]);
+
+  const loadMoreRef = useRef(null);
+
+  useEffect(() => {
+    if (!loadMoreRef.current) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setVisibleCount((prev) => Math.min(prev + 16, filteredStudents.length));
+        }
+      },
+      { threshold: 0.1, rootMargin: '200px' }
+    );
+    
+    observer.observe(loadMoreRef.current);
+    return () => observer.disconnect();
+  }, [filteredStudents.length]);
 
   return (
     <>
@@ -117,21 +153,19 @@ export default function StudentList() {
                   {tab.icon}
                 </span>
                 <span className="font-semibold text-sm">{tab.label}</span>
-                <span className={`text-xs font-bold ${isActive ? 'text-gray-300' : 'text-gray-400'}`}>
-                  {counts[tab.id]}
-                </span>
               </button>
             )
           })}
         </div>
+
 
         {/* ── STUDENT DIRECTORY LIST ───────────────────────────────────────── */}
         <div className="w-full">
           {/* Results metadata */}
           <div className="flex justify-between items-center mb-4">
             {!loading && (
-              <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">
-                {filteredStudents.length} profile{filteredStudents.length !== 1 ? 's' : ''} found
+              <p className="text-xs font-bold text-black uppercase tracking-wider">
+                profile{filteredStudents.length !== 1 ? 's' : ''} found
               </p>
             )}
 
@@ -169,33 +203,41 @@ export default function StudentList() {
               {[1, 2, 3, 4, 5, 6, 7, 8].map((n) => <CardSkeleton key={n} />)}
             </div>
           ) : (
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-              {filteredStudents.map((student, index) => (
-                <StudentCard
-                  key={`${student.id}-${index}`}
-                  student={student}
-                  onOpen={() => openModal(student)}
-                  onTagToggle={() => { }}
-                  selectedTags={[]}
-                />
-              ))}
+            <>
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                {visibleStudents.map((student, index) => (
+                  <StudentCard
+                    key={`${student.id}-${index}`}
+                    student={student}
+                    onOpen={() => openModal(student)}
+                    onTagToggle={() => { }}
+                    selectedTags={[]}
+                  />
+                ))}
 
-              {filteredStudents.length === 0 && (
-                <div className="col-span-full text-center py-20 card-surface bg-white/50">
-                  <EmptySearchIcon />
-                  <p className="text-brand-black font-extrabold text-lg">No profiles found</p>
-                  <p className="text-gray-500 text-sm mt-1 max-w-sm mx-auto">
-                    No student matches the search query.
-                  </p>
-                  <button
-                    onClick={handleClearAll}
-                    className="mt-5 btn-primary !py-2 !px-5 !text-xs font-bold"
-                  >
-                    Clear Search
-                  </button>
+                {filteredStudents.length === 0 && (
+                  <div className="col-span-full text-center py-20 card-surface bg-white/50">
+                    <EmptySearchIcon />
+                    <p className="text-brand-black font-extrabold text-lg">No profiles found</p>
+                    <p className="text-gray-500 text-sm mt-1 max-w-sm mx-auto">
+                      No student matches the search query.
+                    </p>
+                    <button
+                      onClick={handleClearAll}
+                      className="mt-5 btn-primary !py-2 !px-5 !text-xs font-bold"
+                    >
+                      Clear Search
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              {filteredStudents.length > visibleCount && (
+                <div ref={loadMoreRef} className="col-span-full flex justify-center py-8 mt-6">
+                  <div className="w-6 h-6 border-2 border-brand-black/30 border-t-brand-black rounded-full animate-spin" />
                 </div>
               )}
-            </div>
+            </>
           )}
         </div>
       </section>

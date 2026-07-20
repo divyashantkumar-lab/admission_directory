@@ -17,10 +17,11 @@ function toCard(student) {
     instagram: student.instagram,
     twitter: student.twitter,
     aboutYou: student.aboutYou,
-    achievement: student.achievement,
+    achievements: student.achievements,
     startupLink: student.startupLink,
     photo: student.photo,
-    clubOrCouncil: student.clubOrCouncil,
+    club: student.club,
+    studentCouncil: student.studentCouncil,
     classOf: student.classOf,
     city: student.city,
     // project video (top-level drive/yt link)
@@ -42,6 +43,7 @@ function toCard(student) {
     projectStackSem2: student.projectStackSem2,
     projectLinkSem2: student.projectLinkSem2,
     projectVideoSem2: student.projectVideoSem2,
+    profilePicture: student.profilePicture
   };
 }
 

@@ -45,17 +45,18 @@ const HEADER_MAP = {
   // One-liner – trailing-space variants
   'One-liner Intro': 'oneLiner',
   'One-liner Intro ': 'oneLiner',
-  // About / achievement
+  // About / achievements
   'Anything else we should know about you?': 'aboutYou',
   'Anything else we should know about you?  ': 'aboutYou',
   'Anything else we should know about you? ': 'aboutYou',
-  'Achivement': 'achievement',
-  'Achievement': 'achievement',
+  'Achivement': 'achievements',
+  'Achievement': 'achievements',
   // Links
   'Startup Link (URL)': 'startupLink',
   'Photo': 'photo',
   // Profile metadata
-  'Part of Club/ Student Council': 'clubOrCouncil',
+  'Part of Club': "club",
+  'Student Council': 'studentCouncil',
   'Class of': 'classOf',
   "City": 'city',
   "State": 'state',
@@ -83,6 +84,7 @@ const HEADER_MAP = {
   'Video Sem 2': 'projectVideoSem2',
   // Tech
   'Tech Stack and Rating': 'techStack',
+  "CDN Link": "profilePicture"
 };
 
 module.exports = {

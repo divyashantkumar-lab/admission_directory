@@ -5,17 +5,7 @@ export default function Layout({ children }) {
     <div className="min-h-screen flex flex-col">
       <header className="bg-brand-black border-b border-primary-1/20 shadow-lg sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-wrap items-center justify-between gap-4">
-          <Link
-            to="/"
-            className="flex items-center gap-3 group"
-          >
-            <span className="w-10 h-10 rounded-xl bg-primary-1 flex items-center justify-center text-brand-black font-extrabold text-lg group-hover:scale-110 transition-transform">
-              PC
-            </span>
-            <span className="text-xl font-extrabold text-white group-hover:text-primary-1 transition-colors">
-              Portfolio <span className="text-primary-1">Compass</span>
-            </span>
-          </Link>
+
           <nav className="flex items-center gap-6 flex-wrap" aria-label="Main navigation">
             <NavLink
               to="/"
@@ -29,7 +19,10 @@ export default function Layout({ children }) {
           </nav>
         </div>
       </header>
-      <main className="flex-1">{children}</main>
+
+      <main className="flex-1" style={{ backgroundColor: "#f9f1d0" }}>{children}</main>
+
+
       <footer className="bg-brand-black border-t border-primary-1/20 text-white/70 py-10 mt-auto">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid sm:grid-cols-3 gap-8 mb-8">
