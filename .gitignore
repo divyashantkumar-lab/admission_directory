@@ -1,58 +1,92 @@
-# ─── OS & System Files ───────────────────────────────────────────────────────
+# ─── ENVIRONMENT & SECRETS ───────────────────────────────────────
+.env
+.env.local
+.env.*.local
+.env.production.local
+
+# ─── NODE / NPM ───────────────────────────────────────────────────
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json.lock
+pnpm-debug.log*
+
+# ─── BUILD & DIST ─────────────────────────────────────────────────
+dist/
+build/
+*.tsbuildinfo
+
+# ─── IDE & EDITOR ─────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+*.sublime-project
+*.sublime-workspace
+.project
+.classpath
+.c9/
+*.iml
+
+# ─── OS FILES ─────────────────────────────────────────────────────
 .DS_Store
 .DS_Store?
 ._*
 .Spotlight-V100
 .Trashes
-Thumbs.db
 ehthumbs.db
-desktop.ini
 
-# ─── Node / Dependencies ─────────────────────────────────────────────────────
-node_modules/
-.npm
-.yarn/
-
-# ─── Environment & Secrets ───────────────────────────────────────────────────
-.env
-.env.local
-.env.*.local
-.env.production
-
-# ─── Build Output ────────────────────────────────────────────────────────────
-frontend/dist/
-build/
-out/
-
-# ─── Logs ────────────────────────────────────────────────────────────────────
-*.log
+# ─── LOGS & TEMP ──────────────────────────────────────────────────
 logs/
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
+*.log
+npm-debug.log
+yarn-error.log
+pnpm-error.log
 
-# ─── Backend: Historical CSV Snapshots ───────────────────────────────────────
-# These are versioned data backups with no impact on production.
-backend/data/students_prev*.csv
-backend/data/backups/
-
-# ─── Frontend: One-off Scripts & Test Files ──────────────────────────────────
-# These are scratch/utility files used during development only.
-frontend/edit_script.cjs
-frontend/test_icons.jsx
-
-# ─── Editor & IDE Config ─────────────────────────────────────────────────────
-.vscode/
-.idea/
-*.sublime-project
-*.sublime-workspace
-.history/
-
-# ─── Misc ────────────────────────────────────────────────────────────────────
-*.tgz
-*.zip
-coverage/
+# ─── CACHE ────────────────────────────────────────────────────────
 .cache/
-.parcel-cache/
+.eslintcache
+.node_repl_history
+*.tgz
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
+
+# ─── VITE/WEBPACK ─────────────────────────────────────────────────
+.vite/
+dist/
+.cache/
+
+# ─── TESTING ──────────────────────────────────────────────────────
+.nyc_output/
+coverage/
+.jest_cache/
+
+# ─── TEMPORARY FILES ──────────────────────────────────────────────
+*.tmp
+*.temp
 .turbo/
+turbo.log
+
+# ─── DOCUMENTATION ───────────────────────────────────────────────
+# Keep only original README.md, ignore generated docs
+DEPLOYMENT.md
+NEXT_STEPS.md
+QUICK_START.md
+PROJECT_SUMMARY.md
+README_DEPLOYMENT.md
+
+# ─── MISC ─────────────────────────────────────────────────────────
+.env*.local
+.tern-port
+.vuepress/dist
+dist-ssr
+*.local
+*.code-workspace
+.ruby-version
