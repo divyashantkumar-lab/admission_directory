@@ -74,6 +74,14 @@ coverage/
 .turbo/
 turbo.log
 
+# ─── DOCUMENTATION ───────────────────────────────────────────────
+# Keep only original README.md, ignore generated docs
+DEPLOYMENT.md
+NEXT_STEPS.md
+QUICK_START.md
+PROJECT_SUMMARY.md
+README_DEPLOYMENT.md
+
 # ─── MISC ─────────────────────────────────────────────────────────
 .env*.local
 .tern-port
