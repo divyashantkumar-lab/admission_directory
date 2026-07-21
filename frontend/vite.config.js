@@ -5,8 +5,20 @@ export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
+    middlewareMode: false,
   },
   build: {
+    target: 'esnext',
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+      output: {
+        comments: false,
+      },
+    },
     rollupOptions: {
       output: {
         manualChunks: {
@@ -17,5 +29,11 @@ export default defineConfig({
       },
     },
     chunkSizeWarningLimit: 600,
+    cssCodeSplit: true,
+    cssTarget: 'chrome89',
+    assetsInlineLimit: 4096,
+  },
+  optimizeDeps: {
+    include: ['react', 'react-dom', 'react-router-dom', '@reduxjs/toolkit', 'react-redux', 'axios'],
   },
 });

@@ -56,20 +56,18 @@ function MapInternshipWithRole({ student }) {
   });
 }
 
-export default function StudentModal({ student, onClose }) {
-  const techs = parseTechTags(student.techStack);
-  const photoUrl = driveToDirectImg(student.profilePicture, 1000);
+function StudentModalComponent({ student, onClose }) {
+  const techs = React.useMemo(() => parseTechTags(student.techStack), [student.techStack]);
+  // Unified size: use 256px and scale with CSS for better caching and performance
+  const photoUrl = React.useMemo(() => {
+    const imageUrl = student.profilePicture || student.photo;
+    return driveToDirectImg(imageUrl, 256);
+  }, [student.profilePicture, student.photo]);
 
   const [imgError, setImgError] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);
   const [activeTab, setActiveTab] = useState('overview');
-  const [flipKey, setFlipKey] = useState(0);
   const [resumeLoaded, setResumeLoaded] = useState(false);
-
-  // Re-trigger content transition animations smoothly on tab updates
-  useEffect(() => {
-    setFlipKey(prev => prev + 1);
-  }, [activeTab]);
 
   // Handle global body scroll freeze and keyboard event handling cleanly
   useEffect(() => {
@@ -103,9 +101,8 @@ export default function StudentModal({ student, onClose }) {
       {/* Immersive Dark Glass Backdrop Layer */}
       <div className="absolute inset-0 bg-stone-950/75 backdrop-blur-sm transition-opacity duration-300" onClick={onClose} />
 
-      {/* Main Structural Container Frame */}
+      {/* Main Structural Container Frame - VIEWPORT CENTERED */}
       <div className="relative w-full max-w-4xl h-auto max-h-[92vh] lg:h-[82vh] bg-white rounded-2xl shadow-[0_30px_60px_-15px_rgba(0,0,0,0.4)] flex flex-col lg:flex-row z-10 border border-stone-200/80 overflow-y-auto lg:overflow-hidden min-w-0 transition-all duration-300">
-
         {/* Global Modal Exit Action Button */}
         <button
           onClick={onClose}
@@ -125,21 +122,13 @@ export default function StudentModal({ student, onClose }) {
             <div className="shrink-0 shadow-[0_12px_28px_rgba(0,0,0,0.5)] rounded-2xl overflow-hidden bg-stone-800 p-0.5 ring-1 ring-white/10 bg-gradient-to-b from-amber-400/30 to-transparent">
               <div className="relative w-[9rem] h-[11.5rem] sm:w-[10rem] sm:h-[13rem] lg:w-[11.5rem] lg:h-[14.5rem] rounded-[14px] overflow-hidden bg-stone-900 flex items-center justify-center">
                 {photoUrl && !imgError ? (
-                  <>
-                    {!imgLoaded && (
-                      <div
-                        aria-hidden="true"
-                        className="absolute inset-0 w-full h-full bg-gradient-to-br from-stone-700 via-stone-600 to-stone-700 animate-pulse z-10 opacity-90 border border-stone-600/30 rounded-[14px]"
-                      />
-                    )}
-                    <img
-                      src={photoUrl}
-                      alt={student.name}
-                      onLoad={() => setImgLoaded(true)}
-                      onError={() => setImgError(true)}
-                      className={`w-full h-full object-cover transition-all duration-500 scale-100 hover:scale-102 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
-                    />
-                  </>
+                  <img
+                    src={photoUrl}
+                    alt={student.name}
+                    onLoad={() => setImgLoaded(true)}
+                    onError={() => setImgError(true)}
+                    className={`w-full h-full object-cover transition-opacity duration-500 ${imgLoaded ? 'opacity-100' : 'opacity-0'}`}
+                  />
                 ) : (
                   <div className="w-full h-full text-amber-400 bg-stone-900 flex items-center justify-center font-bold text-2xl tracking-tight">
                     {getInitials(student.name)}
@@ -240,7 +229,7 @@ export default function StudentModal({ student, onClose }) {
         </div>
 
         {/* ─── RIGHT PANEL: CLEAN LIGHT TEXT CANVAS ─────────────────── */}
-        <div className="flex-1 flex flex-col min-w-0 bg-[#FCFCFB] lg:overflow-hidden w-full">
+        <div className="flex-1 flex flex-col min-w-0 min-h-0 bg-[#FCFCFB] overflow-hidden w-full">
 
           {/* Ledger Floating Nav Tab Bar */}
           <div className="h-[65px] flex border-b border-stone-200/80 shrink-0 px-4 sm:px-6 bg-stone-50/50 z-10 sticky top-0 lg:relative w-full overflow-x-auto scrollbar-none">
@@ -263,8 +252,8 @@ export default function StudentModal({ student, onClose }) {
 
           {/* Dynamic Inner Content Leaf Canvas */}
           <div
-            key={flipKey}
-            className="flex-1 px-5 py-6 sm:p-6 bg-transparent overflow-y-auto w-full min-w-0 overflow-x-hidden animate-[fadeIn_0.2s_ease-out]"
+            className="flex-1 px-5 py-6 sm:p-6 bg-transparent overflow-y-auto w-full min-w-0 overflow-x-hidden"
+            style={{ opacity: 1, transition: 'opacity 0.15s ease-out' }}
           >
             {/* ─── TAB CONTENT: OVERVIEW ─── */}
             {activeTab === 'overview' && (
@@ -305,16 +294,16 @@ export default function StudentModal({ student, onClose }) {
                     <div className="w-full min-w-0">
                       <SectionHeader icon={<TrophyIcon className="w-4 h-4" />}>achievements</SectionHeader>
                       <div className="relative text-stone-700 text-[13px] sm:text-[13.5px] leading-relaxed rounded-xl p-4 border border-amber-200/40 bg-amber-50/20 text-left w-full break-words whitespace-pre-line shadow-sm font-normal tracking-wide">
-                      {student?.achievements?.split("\n").length > 1 ? (
-                      <ul className="list-disc space-y-2 pl-5">
-                        {
-                          student?.achievements?.split("\n").map((achievement, index) => (
-                            <li key={index}>{achievement}</li>
-                          ))
-                        }
-                      </ul>) : (
-                        <p>{student.achievements}</p>
-                      )}
+                        {student?.achievements?.split("\n").length > 1 ? (
+                          <ul className="list-disc space-y-2 pl-5">
+                            {
+                              student?.achievements?.split("\n").map((achievement, index) => (
+                                <li key={index}>{achievement}</li>
+                              ))
+                            }
+                          </ul>) : (
+                          <p>{student.achievements}</p>
+                        )}
                       </div>
                     </div>
                   )}
@@ -457,41 +446,6 @@ export default function StudentModal({ student, onClose }) {
                 )}
               </div>
             )}
-
-            {/* ─── TAB CONTENT: RESUME PREVIEW ─── */}
-            {/* {activeTab === 'resume' && student.resume && (
-              <div className="h-full flex flex-col space-y-4 w-full min-w-0">
-                <SectionHeader icon={<FileIcon className="w-4 h-4" />}>Resume Document</SectionHeader>
-
-                <div className="relative w-full h-[420px] lg:flex-1 lg:h-auto rounded-xl overflow-hidden bg-stone-50 border border-stone-200 shadow-inner">
-                  {!resumeLoaded && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center p-6 space-y-2">
-                      <div className="w-5 h-5 border-2 border-stone-300 border-t-amber-500 rounded-full animate-spin" />
-                    </div>
-                  )}
-
-                  <iframe
-                    src={resumeEmbedUrl}
-                    title={`${student.name}'s Academic Resume Port`}
-                    className={`w-full h-full transition-opacity duration-300 ${resumeLoaded ? 'opacity-100' : 'opacity-0'}`}
-                    onLoad={() => setResumeLoaded(true)}
-                    allow="autoplay"
-                    style={{ border: 'none' }}
-                  />
-                </div>
-
-                <div className="flex flex-col sm:flex-row gap-2 items-center justify-between pt-0.5 w-full">
-                  <a
-                    href={ensureHttps(student.resume)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white hover:bg-stone-50 text-stone-700 text-[11px] font-medium border border-stone-200 shadow-sm transition-colors duration-150"
-                  >
-                    <FileIcon className="w-3 h-3 text-amber-500" />Open Canvas Direct
-                  </a>
-                </div>
-              </div>
-            )} */}
           </div>
         </div>
 
@@ -499,3 +453,5 @@ export default function StudentModal({ student, onClose }) {
     </div>
   );
 }
+
+export default React.memo(StudentModalComponent);

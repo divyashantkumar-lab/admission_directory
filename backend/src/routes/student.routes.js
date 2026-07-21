@@ -14,6 +14,8 @@ router.get(
   [
     query('batch').optional().trim().escape(),
     query('search').optional().trim().escape(),
+    query('limit').optional().isInt({ min: 1, max: 100 }),
+    query('offset').optional().isInt({ min: 0 }),
   ],
   validate,
   studentController.list

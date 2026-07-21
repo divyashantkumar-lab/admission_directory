@@ -1,7 +1,7 @@
 const studentRepository = require('../repositories/student.repository');
 
 function toCard(student) {
-  return {
+  const card = {
     id: student.id,
     name: student.name,
     year: Number.parseInt(student.year),
@@ -43,8 +43,10 @@ function toCard(student) {
     projectStackSem2: student.projectStackSem2,
     projectLinkSem2: student.projectLinkSem2,
     projectVideoSem2: student.projectVideoSem2,
-    profilePicture: student.profilePicture
+    profilePicture: student.profilePicture,
   };
+
+  return card;
 }
 
 function matchesSearch(student, search) {
@@ -60,8 +62,12 @@ function matchesSearch(student, search) {
   return fields.some((f) => String(f || '').toLowerCase().includes(q));
 }
 
-async function list({ batch, search } = {}) {
+async function list({ batch, search, openSource, internship, club, studentCouncil, limit = 24, offset = 0 } = {}) {
+
+  console.log(batch, search, openSource, internship, club, studentCouncil, limit, offset)
+  
   let students = await studentRepository.readAll();
+
   if (batch) {
     students = students.filter(
       (s) => String(s.batch || '').toLowerCase() === batch.toLowerCase()
@@ -70,11 +76,40 @@ async function list({ batch, search } = {}) {
   if (search) {
     students = students.filter((s) => matchesSearch(s, search));
   }
+  if (openSource && openSource !== 'false') {
+    students = students.filter((s) => s.openSource && String(s.openSource).trim() !== '');
+  }
+  if (internship && internship !== 'false') {
+    students = students.filter(
+      (s) => (s.internshipRole && String(s.internshipRole).trim() !== '') ||
+             (s.internshipCompany && String(s.internshipCompany).trim() !== '')
+    );
+  }
+  if (club && club !== 'false') {
+    students = students.filter((s) => s.club && String(s.club).trim() !== '');
+  }
+  if (studentCouncil && studentCouncil !== 'false') {
+    students = students.filter((s) => s.studentCouncil && String(s.studentCouncil).trim() !== '');
+  }
+
   students.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 
-  const responseData = students.map(toCard);
+  const total = students.length;
+  const paginatedStudents = students.slice(offset, offset + limit);
 
-  return responseData;
+  const responseData = paginatedStudents.map((student) =>
+    toCard(student)
+  );
+
+  return {
+    data: responseData,
+    pagination: {
+      total,
+      limit,
+      offset,
+      hasMore: offset + limit < total,
+    },
+  };
 }
 
 async function getById(id) {

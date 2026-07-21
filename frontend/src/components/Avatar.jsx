@@ -1,22 +1,22 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { driveToDirectImg, getInitials, mergeClasses } from '../utils/helpers';
+import ImageSkeleton from './ImageSkeleton';
 
-export default function Avatar({ student, size = 'md', className = "", onLoad }) {
+function AvatarComponent({ student, size = 'md', className = "", onLoad }) {
   const [imgError, setImgError] = useState(false);
-  const [isLoaded, setIsLoaded] = useState(false); // Track if the image has finished loading
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  const sizeClasses = {
+  const sizeClasses = React.useMemo(() => ({
     sm: 'w-16 h-16 text-xl',
     md: 'w-14 h-14 text-lg',
     lg: 'w-32 h-32 text-4xl',
-  };
+  }), []);
 
-  const widthMap = {
-    sm: 120,
-    md: 120,
-    lg: 300,
-  };
-  const photoUrl = driveToDirectImg(student.profilePicture, widthMap[size] || 120);
+  const photoUrl = React.useMemo(() => {
+    // Prefer CDN Link (profilePicture) over Photo field
+    const imageUrl = student.profilePicture || student.photo;
+    return driveToDirectImg(imageUrl, 256);
+  }, [student.profilePicture, student.photo]);
 
   // Added opacity transitions to smoothly fade in the image once loaded
   const finalClassName = mergeClasses(
@@ -36,22 +36,24 @@ export default function Avatar({ student, size = 'md', className = "", onLoad })
 
   if (photoUrl && !imgError) {
     return (
-      <div className={`w-[35%] aspect-square relative rounded-full flex-shrink-0`}>
-        {/* Render a skeleton overlay inline if the image is still loading */}
-        {!isLoaded && (
-          <div className="absolute inset-0 rounded-full skeleton z-10" />
-        )}
-        
+      <div className={`w-[35%] aspect-square relative rounded-full flex-shrink-0 overflow-hidden`}>
+        {/* Lightweight skeleton loader */}
+        {!isLoaded && <ImageSkeleton className="absolute inset-0 rounded-full" />}
+
         <img
           src={photoUrl}
           alt={student.name}
-          loading="lazy"
+          loading="eager"
           onLoad={() => {
             setIsLoaded(true);
-            if (onLoad) onLoad(); // Fire the parent's optional callback if passed
+            if (onLoad) onLoad();
           }}
           onError={() => setImgError(true)}
-          className={"avatar w-full h-full text-lg rounded-full object-cover ring-4 ring-primary-1/30 shadow-lg group-hover:scale-105 group-hover:ring-primary-2/40 transition-all duration-300 opacity-100"}
+          className={`avatar w-full h-full text-lg rounded-full object-cover ring-4 ring-primary-1/30 shadow-lg transition-opacity duration-200 ${
+            isLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
+          decoding="async"
+          fetchpriority="high"
         />
       </div>
     );
@@ -64,6 +66,7 @@ export default function Avatar({ student, size = 'md', className = "", onLoad })
   );
 }
 
+export default React.memo(AvatarComponent);
 
 // import React, { useState } from 'react';
 // import { driveToDirectImg, getInitials, mergeClasses } from '../utils/helpers';

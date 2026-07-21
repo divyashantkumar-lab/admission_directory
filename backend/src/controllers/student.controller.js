@@ -10,9 +10,18 @@ function handleError(res, err) {
 
 async function list(req, res) {
   try {
-    const { batch, search } = req.query;
-    const data = await studentService.list({ batch, search });
-    return res.json({ success: true, data });
+    const { batch, search, limit, offset, openSource, internship, club, studentCouncil } = req.query;
+    const result = await studentService.list({
+      batch,
+      search,
+      openSource,
+      internship,
+      club,
+      studentCouncil,
+      limit: Math.min(Number.parseInt(limit) || 24, 100), // Max 100 per request
+      offset: Number.parseInt(offset) || 0,
+    });
+    return res.json({ success: true, ...result });
   } catch (err) {
     return handleError(res, err);
   }

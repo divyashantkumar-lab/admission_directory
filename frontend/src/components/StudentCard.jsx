@@ -3,7 +3,6 @@ import Avatar from './Avatar';
 import { parseTechTags, ensureHttps } from '../utils/helpers';
 import {
   PinIcon,
-  AwardIcon,
   YouTubeIcon,
   GitHubIcon,
   BriefcaseIcon,
@@ -17,48 +16,51 @@ export function CardSkeleton() {
   return (
     <div className="bg-secondary-1 rounded-3xl border border-black/[0.06] p-5 space-y-4 shadow-sm">
       <div className="flex items-center gap-3">
-        <div className="w-[30%] aspect-square rounded-full skeleton" />
+        <div className="w-[30%] aspect-square rounded-full bg-gray-200" />
         <div className="flex-1 space-y-2">
-          <div className="h-4 skeleton rounded w-2/3" />
-          <div className="h-3 skeleton rounded w-1/3" />
+          <div className="h-4 bg-gray-200 rounded w-2/3" />
+          <div className="h-3 bg-gray-200 rounded w-1/3" />
         </div>
       </div>
-      <div className="h-3 skeleton rounded w-full" />
-      <div className="h-3 skeleton rounded w-4/5" />
+      <div className="h-3 bg-gray-200 rounded w-full" />
+      <div className="h-3 bg-gray-200 rounded w-4/5" />
       <div className="grid grid-cols-2 gap-2">
-        <div className="h-8 skeleton rounded-xl" />
-        <div className="h-8 skeleton rounded-xl" />
+        <div className="h-8 bg-gray-200 rounded-xl" />
+        <div className="h-8 bg-gray-200 rounded-xl" />
       </div>
       <div className="h-px bg-gray-100" />
       <div className="flex items-center justify-between">
         <div className="flex gap-2">
-          <div className="h-5 w-5 skeleton rounded-full" />
-          <div className="h-5 w-5 skeleton rounded-full" />
-          <div className="h-5 w-5 skeleton rounded-full" />
+          <div className="h-5 w-5 bg-gray-200 rounded-full" />
+          <div className="h-5 w-5 bg-gray-200 rounded-full" />
+          <div className="h-5 w-5 bg-gray-200 rounded-full" />
         </div>
-        <div className="h-6 w-6 skeleton rounded-full" />
+        <div className="h-6 w-6 bg-gray-200 rounded-full" />
       </div>
     </div>
   );
 }
 
-export function StudentCard({ student, onOpen, onTagToggle, selectedTags = [] }) {
+function StudentCardComponent({ student, onOpen, onTagToggle, selectedTags = [] }) {
   const techs = parseTechTags(student.techStack, 3);
   const hasOpenSource = Boolean(student.openSource);
   const hasInternship = Boolean(student.internshipRole || student.internshipCompany);
   const hasStartup = Boolean(student.startupLink);
 
-  const class12 = student.class12;
-  const jeeMains = student.jeeMains;
-
   return (
     <article
       onClick={onOpen}
-      style={{ contentVisibility: 'auto', containIntrinsicSize: 'auto 280px', backgroundColor: "#f9f6ea" }}
-      className="rounded-3xl border border-black/[0.06] p-5 flex flex-col justify-between min-h-[280px] cursor-pointer group hover:border-primary-2/30 hover:shadow-glow hover:-translate-y-1.5 transition-all duration-300 ease-out relative overflow-hidden shadow-sm"
+      style={{
+        backgroundColor: "#f9f6ea",
+        willChange: 'transform',
+        contentVisibility: 'auto',
+        containIntrinsicSize: 'auto 300px',
+        contain: 'layout style paint'
+      }}
+      className="rounded-3xl border border-black/[0.06] p-5 flex flex-col justify-between min-h-[280px] cursor-pointer group hover:border-primary-2/30 transition-colors duration-200 relative overflow-hidden shadow-sm"
     >
       {/* Decorative hover gradient top-border */}
-      <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-primary-1 via-primary-2 to-primary-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+      <div className="absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-primary-1 via-primary-2 to-primary-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200" />
 
       {/* Top content - upper body wrapper with structured flex gaps */}
       <div className="flex flex-col gap-3.5 flex-1 justify-start min-w-0">
@@ -80,7 +82,7 @@ export function StudentCard({ student, onOpen, onTagToggle, selectedTags = [] })
                 </span>
               )}
               <div className="min-w-0 flex-1">
-                <h2 className="font-extrabold text-center text-brand-black text-[16px] leading-tight group-hover:text-primary-3 transition-colors truncate pb-1">
+                <h2 className="font-extrabold text-center text-brand-black text-[16px] leading-tight truncate pb-1">
                   {student.name}
                 </h2>
 
@@ -256,13 +258,15 @@ export function StudentCard({ student, onOpen, onTagToggle, selectedTags = [] })
               e.stopPropagation();
               onOpen();
             }}
-            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-brand-black text-white text-[10px] font-bold group-hover:bg-primary-1 group-hover:text-brand-black transition-all duration-300 shadow-sm"
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-brand-black text-white text-[10px] font-bold group-hover:bg-primary-1 group-hover:text-brand-black transition-colors duration-200 shadow-sm"
           >
             View Profile
-            <span className="inline-block group-hover:translate-x-0.5 transition-transform duration-300">&rarr;</span>
+            <span className="inline-block">&rarr;</span>
           </button>
         </div>
       </div>
     </article>
   );
 }
+
+export const StudentCard = React.memo(StudentCardComponent);

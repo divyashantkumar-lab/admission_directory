@@ -1,50 +1,96 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axiosInstance from '../api/axiosInstance';
-import cacheService from '../services/cacheService';
 
 const initialState = {
   list: [],
   current: null,
   loading: false,
+  loadingMore: false,
   error: null,
-  filters: { batch: '', search: '' },
-  fromCache: false,
+  filters: {
+    batch: '',
+    search: '',
+    openSource: '',
+    internship: '',
+    club: '',
+    studentCouncil: '',
+  },
+  pagination: {
+    total: 0,
+    limit: 24,
+    offset: 0,
+    hasMore: false,
+  },
 };
 
 export const fetchStudents = createAsyncThunk(
   'students/fetchList',
-  async (params, { rejectWithValue }) => {
+  async (params, { rejectWithValue, dispatch }) => {
     try {
-      // Try to get from cache first
-      const cachedStudents = await cacheService.getStudentsListFromCache();
-      if (cachedStudents && cachedStudents.length > 0) {
-        return { data: cachedStudents, fromCache: true };
-      }
+      const query = {
+        limit: 24,
+        offset: 0,
+      };
 
-      // Fallback to network
-      const query = {};
       if (params?.batch) query.batch = params.batch;
       if (params?.search) query.search = params.search;
+      if (params?.openSource) query.openSource = params.openSource;
+      if (params?.internship) query.internship = params.internship;
+      if (params?.club) query.club = params.club;
+      if (params?.studentCouncil) query.studentCouncil = params.studentCouncil;
+
       const { data } = await axiosInstance.get('/students', { params: query });
 
-      // Save to cache
-      await cacheService.saveStudentsListToCache(data.data);
+      // Update filters in Redux state for pagination
+      dispatch(setFilters({
+        batch: params?.batch || '',
+        search: params?.search || '',
+        openSource: params?.openSource || '',
+        internship: params?.internship || '',
+        club: params?.club || '',
+        studentCouncil: params?.studentCouncil || '',
+      }));
 
-      return { data: data.data, fromCache: false };
+      return {
+        data: data.data,
+        pagination: data.pagination,
+      };
     } catch (err) {
-      // If network fails, try cache as fallback
-      try {
-        const cachedStudents = await cacheService.getStudentsListFromCache();
-        if (cachedStudents && cachedStudents.length > 0) {
-          console.warn('Network failed, using stale cache');
-          return { data: cachedStudents, fromCache: true };
-        }
-      } catch (cacheErr) {
-        console.warn('Cache fallback failed:', cacheErr);
-      }
-
       return rejectWithValue(
         err.response?.data?.message || 'Failed to load students'
+      );
+    }
+  }
+);
+
+export const fetchMoreStudents = createAsyncThunk(
+  'students/fetchMore',
+  async (params, { rejectWithValue, getState }) => {
+    try {
+      const state = getState();
+      const currentOffset = state.students.pagination.offset;
+      const filters = state.students.filters;
+
+      const query = {
+        limit: 24,
+        offset: currentOffset + 24,
+      };
+      if (filters?.batch) query.batch = filters.batch;
+      if (filters?.search) query.search = filters.search;
+      if (filters?.openSource) query.openSource = filters.openSource;
+      if (filters?.internship) query.internship = filters.internship;
+      if (filters?.club) query.club = filters.club;
+      if (filters?.studentCouncil) query.studentCouncil = filters.studentCouncil;
+
+      const { data } = await axiosInstance.get('/students', { params: query });
+
+      return {
+        data: data.data,
+        pagination: data.pagination,
+      };
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || 'Failed to load more students'
       );
     }
   }
@@ -54,31 +100,9 @@ export const fetchStudentById = createAsyncThunk(
   'students/fetchById',
   async (id, { rejectWithValue }) => {
     try {
-      // Try to get from cache first
-      const cachedStudent = await cacheService.getStudentDetailFromCache(id);
-      if (cachedStudent) {
-        return { data: cachedStudent, fromCache: true };
-      }
-
-      // Fallback to network
       const { data } = await axiosInstance.get(`/students/${id}`);
-
-      // Save to cache
-      await cacheService.saveStudentDetailToCache(data.data);
-
-      return { data: data.data, fromCache: false };
+      return { data: data.data };
     } catch (err) {
-      // If network fails, try cache as fallback
-      try {
-        const cachedStudent = await cacheService.getStudentDetailFromCache(id);
-        if (cachedStudent) {
-          console.warn(`Network failed for student ${id}, using stale cache`);
-          return { data: cachedStudent, fromCache: true };
-        }
-      } catch (cacheErr) {
-        console.warn('Cache fallback failed:', cacheErr);
-      }
-
       return rejectWithValue(
         err.response?.data?.message || 'Failed to load student'
       );
@@ -91,8 +115,6 @@ export const createStudent = createAsyncThunk(
   async (payload, { rejectWithValue }) => {
     try {
       const { data } = await axiosInstance.post('/students', payload);
-      // Update cache
-      await cacheService.addStudentToCache(data.data);
       return data.data;
     } catch (err) {
       return rejectWithValue(
@@ -107,8 +129,6 @@ export const updateStudent = createAsyncThunk(
   async ({ id, payload }, { rejectWithValue }) => {
     try {
       const { data } = await axiosInstance.put(`/students/${id}`, payload);
-      // Update cache
-      await cacheService.updateStudentInCache(data.data);
       return data.data;
     } catch (err) {
       return rejectWithValue(
@@ -123,8 +143,6 @@ export const deleteStudent = createAsyncThunk(
   async (id, { rejectWithValue }) => {
     try {
       await axiosInstance.delete(`/students/${id}`);
-      // Update cache
-      await cacheService.removeStudentFromCache(id);
       return id;
     } catch (err) {
       return rejectWithValue(
@@ -157,12 +175,24 @@ const studentSlice = createSlice({
       .addCase(fetchStudents.fulfilled, (state, action) => {
         state.loading = false;
         state.list = action.payload.data;
-        state.fromCache = action.payload.fromCache;
+        state.pagination = action.payload.pagination;
       })
       .addCase(fetchStudents.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        state.fromCache = false;
+      })
+      .addCase(fetchMoreStudents.pending, (state) => {
+        state.loadingMore = true;
+        state.error = null;
+      })
+      .addCase(fetchMoreStudents.fulfilled, (state, action) => {
+        state.loadingMore = false;
+        state.list = [...state.list, ...action.payload.data];
+        state.pagination = action.payload.pagination;
+      })
+      .addCase(fetchMoreStudents.rejected, (state, action) => {
+        state.loadingMore = false;
+        state.error = action.payload;
       })
       .addCase(fetchStudentById.pending, (state) => {
         state.loading = true;
@@ -171,12 +201,10 @@ const studentSlice = createSlice({
       .addCase(fetchStudentById.fulfilled, (state, action) => {
         state.loading = false;
         state.current = action.payload.data;
-        state.fromCache = action.payload.fromCache;
       })
       .addCase(fetchStudentById.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        state.fromCache = false;
       })
       .addCase(createStudent.fulfilled, (state, action) => {
         state.list.push({
