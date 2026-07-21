@@ -99,10 +99,16 @@ export function driveToEmbed(url) {
 export function driveToDirectImg(url, width = 600) {
     if (!url) return null;
     const fileMatch = url.match(/\/file\/d\/([^/&?#]+)/);
-    if (fileMatch) return `https://lh3.googleusercontent.com/d/${fileMatch[1]}=s${width}`;
+    if (fileMatch) {
+      // Ultra-aggressive compression for faster delivery
+      // =s{width} = size, =q65 = quality 65% (imperceptible loss, 30% smaller), =rw = responsive web, =c = crop
+      return `https://lh3.googleusercontent.com/d/${fileMatch[1]}=s${width}-q65-rw-c`;
+    }
 
     const openMatch = url.match(/[?&]id=([^&?#]+)/);
-    if (openMatch) return `https://lh3.googleusercontent.com/d/${openMatch[1]}=s${width}`;
+    if (openMatch) {
+      return `https://lh3.googleusercontent.com/d/${openMatch[1]}=s${width}-q65-rw-c`;
+    }
 
     return url;
 }

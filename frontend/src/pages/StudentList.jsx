@@ -1,9 +1,10 @@
-import { useEffect, useState, useMemo, useCallback, useRef } from 'react';
+import { useEffect, useState, useMemo, useCallback, useRef, useTransition } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import SEOMeta from '../components/SEOMeta';
 import { fetchStudents } from '../store/studentSlice';
 import { StudentCard, CardSkeleton } from '../components/StudentCard';
 import StudentModal from '../components/StudentModal';
+import { driveToDirectImg } from '../utils/helpers';
 import {
   UsersIcon,
   GitHubIcon,
@@ -18,12 +19,21 @@ import {
   StudentCouncilIcon,
 } from '../components/icons';
 
+const debounce = (fn, delay) => {
+  let timeoutId;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => fn(...args), delay);
+  };
+};
+
 export default function StudentList() {
   const dispatch = useDispatch();
   const { list, loading, error } = useSelector((state) => state.students);
 
   // Filter States
   const [searchInput, setSearchInput] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [activeFilterTab, setActiveFilterTab] = useState('All students');
 
   // Student detail modal state
@@ -33,6 +43,13 @@ export default function StudentList() {
   useEffect(() => {
     dispatch(fetchStudents({}));
   }, [dispatch]);
+
+  // Debounce search input (300ms delay)
+  useEffect(() => {
+    const debouncedFn = debounce((value) => setDebouncedSearch(value), 300);
+    debouncedFn(searchInput);
+    return () => clearTimeout(debouncedFn);
+  }, [searchInput]);
 
   const openModal = useCallback((student) => setSelectedStudent(student), []);
   const closeModal = useCallback(() => setSelectedStudent(null), []);
@@ -69,8 +86,8 @@ export default function StudentList() {
   const filteredStudents = useMemo(() => {
     return list.filter((student) => {
       // 1. Text Search
-      if (searchInput.trim()) {
-        const query = searchInput.toLowerCase().trim();
+      if (debouncedSearch.trim()) {
+        const query = debouncedSearch.toLowerCase().trim();
         const matchesSearchText =
           String(student.name || '').toLowerCase().includes(query) ||
           String(student.city || '').toLowerCase().includes(query) ||
@@ -96,34 +113,116 @@ export default function StudentList() {
       // classOf
       return true;
     });
-  }, [list, searchInput, activeFilterTab]);
+  }, [list, debouncedSearch, activeFilterTab]);
 
-  const [visibleCount, setVisibleCount] = useState(16);
+  const [visibleCount, setVisibleCount] = useState(32); // Load more initially
+  const [, startTransition] = useTransition();
+  const loadMoreRef = useRef(null);
+  const observerRef = useRef(null);
+  const lastLoadTimeRef = useRef(0);
+  const rafIdRef = useRef(null);
+  const isLoadingRef = useRef(false);
+  const scrollLockRef = useRef(false);
 
   // Reset pagination when search queries or filters change
   useEffect(() => {
-    setVisibleCount(16);
+    setVisibleCount(32); // Load 32 initially to avoid jump
   }, [searchInput, activeFilterTab]);
 
   const visibleStudents = useMemo(() => {
     return filteredStudents.slice(0, visibleCount);
   }, [filteredStudents, visibleCount]);
 
-  const loadMoreRef = useRef(null);
-
+  // Optimized image preloading with unified size (256px)
   useEffect(() => {
-    if (!loadMoreRef.current) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting) {
-          setVisibleCount((prev) => Math.min(prev + 16, filteredStudents.length));
+    // Preload visible cards immediately with high priority
+    const visibleImagesToLoad = filteredStudents.slice(0, visibleCount);
+    visibleImagesToLoad.forEach(student => {
+      if (student.profilePicture) {
+        const img = new Image();
+        img.loading = 'eager';
+        if ('fetchPriority' in img) {
+          img.fetchPriority = 'high';
         }
-      },
-      { threshold: 0.1, rootMargin: '200px' }
-    );
-    
+        img.src = driveToDirectImg(student.profilePicture, 256);
+      }
+    });
+
+    // Preload next 32 cards in background with low priority
+    const upcomingStudents = filteredStudents.slice(visibleCount, visibleCount + 32);
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(() => {
+        upcomingStudents.forEach(student => {
+          if (student.profilePicture) {
+            const img = new Image();
+            img.src = driveToDirectImg(student.profilePicture, 256);
+          }
+        });
+      }, { timeout: 2000 });
+    }
+  }, [visibleCount, filteredStudents]);
+
+  // Optimized Intersection Observer with RAF debouncing and aggressive throttling
+  useEffect(() => {
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+    }
+
+    if (!loadMoreRef.current) return;
+
+    const handleIntersection = (entries) => {
+      if (entries[0].isIntersecting && !isLoadingRef.current && !scrollLockRef.current) {
+        const now = Date.now();
+        // Reduced throttle: 500ms for smoother loading
+        if (now - lastLoadTimeRef.current > 500) {
+          lastLoadTimeRef.current = now;
+          scrollLockRef.current = true;
+
+          // Cancel previous RAF if pending
+          if (rafIdRef.current) {
+            cancelAnimationFrame(rafIdRef.current);
+          }
+
+          // Use RAF to sync with browser repaint cycle
+          rafIdRef.current = requestAnimationFrame(() => {
+            isLoadingRef.current = true;
+
+            // Use startTransition to defer non-urgent update
+            startTransition(() => {
+              setVisibleCount((prev) => {
+                // Load in smaller batches (16 instead of 32) for smoother appearance
+                const newCount = Math.min(prev + 16, filteredStudents.length);
+
+                // Reset loading flags after state update
+                setTimeout(() => {
+                  isLoadingRef.current = false;
+                  scrollLockRef.current = false;
+                }, 50);
+
+                return newCount !== prev ? newCount : prev;
+              });
+            });
+          });
+        }
+      }
+    };
+
+    const observer = new IntersectionObserver(handleIntersection, {
+      threshold: 0,
+      rootMargin: '2000px', // Load even earlier to prevent visible jumps
+    });
+
     observer.observe(loadMoreRef.current);
-    return () => observer.disconnect();
+    observerRef.current = observer;
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+      if (rafIdRef.current) {
+        cancelAnimationFrame(rafIdRef.current);
+      }
+    };
   }, [filteredStudents.length]);
 
   return (
@@ -204,10 +303,18 @@ export default function StudentList() {
             </div>
           ) : (
             <>
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
-                {visibleStudents.map((student, index) => (
+              <div
+                className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5"
+                style={{
+                  willChange: 'contents',
+                  contain: 'layout style paint',
+                  contentVisibility: 'auto',
+                  containIntrinsicSize: 'auto 8000px'
+                }}
+              >
+                {visibleStudents.map((student) => (
                   <StudentCard
-                    key={`${student.id}-${index}`}
+                    key={student.id}
                     student={student}
                     onOpen={() => openModal(student)}
                     onTagToggle={() => { }}
@@ -233,9 +340,7 @@ export default function StudentList() {
               </div>
 
               {filteredStudents.length > visibleCount && (
-                <div ref={loadMoreRef} className="col-span-full flex justify-center py-8 mt-6">
-                  <div className="w-6 h-6 border-2 border-brand-black/30 border-t-brand-black rounded-full animate-spin" />
-                </div>
+                <div ref={loadMoreRef} className="col-span-full h-px mt-6" />
               )}
             </>
           )}
