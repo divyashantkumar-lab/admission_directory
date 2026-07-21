@@ -47,11 +47,12 @@ function toCard(student, includeCompressedImage = false) {
     profilePicture: student.profilePicture,
   };
 
-  // Add compressed image for list view if requested
+  // Add optimized image for list view if requested
   if (includeCompressedImage && student.profilePicture) {
-    card.compressedImage = imageCompressionService.getCompressedImageUrl(
+    card.compressedImage = imageCompressionService.optimizeImageUrl(
       student.profilePicture,
-      256
+      256,
+      60  // quality parameter for Google Drive URLs
     );
   }
 

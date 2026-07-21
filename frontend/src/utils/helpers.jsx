@@ -96,20 +96,30 @@ export function driveToEmbed(url) {
     return url;
 }
 
-export function driveToDirectImg(url, width = 600) {
+export function driveToDirectImg(url, width = 256) {
     if (!url) return null;
+
+    // Handle Google Cloud Storage (GCS) URLs
+    if (url.includes('storage.googleapis.com')) {
+      // GCS URLs support dynamic resizing with =w, =h, =s parameters
+      const separator = url.includes('?') ? '&' : '=';
+      return `${url}${separator}w${width}`;
+    }
+
+    // Handle Google Drive URLs
     const fileMatch = url.match(/\/file\/d\/([^/&?#]+)/);
     if (fileMatch) {
       // Ultra-aggressive compression for faster delivery
-      // =s{width} = size, =q65 = quality 65% (imperceptible loss, 30% smaller), =rw = responsive web, =c = crop
-      return `https://lh3.googleusercontent.com/d/${fileMatch[1]}=s${width}-q65-rw-c`;
+      // =s{width} = size, =q60 = quality 60% (imperceptible loss, 40% smaller), =rw = responsive web, =c = crop
+      return `https://lh3.googleusercontent.com/d/${fileMatch[1]}=s${width}-q60-w${width}-rw-c`;
     }
 
     const openMatch = url.match(/[?&]id=([^&?#]+)/);
     if (openMatch) {
-      return `https://lh3.googleusercontent.com/d/${openMatch[1]}=s${width}-q65-rw-c`;
+      return `https://lh3.googleusercontent.com/d/${openMatch[1]}=s${width}-q60-w${width}-rw-c`;
     }
 
+    // Return URL as-is for other sources
     return url;
 }
 
