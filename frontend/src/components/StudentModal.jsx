@@ -59,7 +59,10 @@ function MapInternshipWithRole({ student }) {
 function StudentModalComponent({ student, onClose }) {
   const techs = React.useMemo(() => parseTechTags(student.techStack), [student.techStack]);
   // Unified size: use 256px and scale with CSS for better caching and performance
-  const photoUrl = React.useMemo(() => driveToDirectImg(student.profilePicture, 256), [student.profilePicture]);
+  const photoUrl = React.useMemo(() => {
+    const imageUrl = student.profilePicture || student.photo;
+    return driveToDirectImg(imageUrl, 256);
+  }, [student.profilePicture, student.photo]);
 
   const [imgError, setImgError] = useState(false);
   const [imgLoaded, setImgLoaded] = useState(false);

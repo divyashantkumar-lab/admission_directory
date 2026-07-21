@@ -54,13 +54,25 @@ app.use(express.json({ limit: '1mb' }));
 
 // Cache control headers for API responses
 app.use((req, res, next) => {
-  // Cache successful API responses for 1 hour
+  // Add security headers for all responses
+  res.set('X-Content-Type-Options', 'nosniff');
+  res.set('X-Frame-Options', 'SAMEORIGIN');
+
+  // Only cache unfiltered GET requests for 1 hour
   if (req.method === 'GET') {
-    res.set('Cache-Control', 'public, max-age=3600, must-revalidate');
-    res.set('ETag', 'W/"' + Date.now() + '"');
-    // Add headers to optimize image loading from client
-    res.set('X-Content-Type-Options', 'nosniff');
-    res.set('X-Frame-Options', 'SAMEORIGIN');
+    // Check if any filter parameters are present
+    const hasFilters = req.query.batch || req.query.search || req.query.openSource ||
+                       req.query.internship || req.query.club || req.query.studentCouncil;
+
+    if (!hasFilters) {
+      // Cache unfiltered requests for 1 hour
+      res.set('Cache-Control', 'public, max-age=3600, must-revalidate');
+      res.set('ETag', 'W/"' + Date.now() + '"');
+    } else {
+      // Don't cache filtered requests - must revalidate every time
+      res.set('Cache-Control', 'public, max-age=0, must-revalidate, no-cache');
+      res.set('Pragma', 'no-cache');
+    }
   }
   next();
 });

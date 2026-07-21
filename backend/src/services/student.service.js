@@ -1,7 +1,6 @@
 const studentRepository = require('../repositories/student.repository');
-const imageCompressionService = require('./imageCompression.service');
 
-function toCard(student, includeCompressedImage = false) {
+function toCard(student) {
   const card = {
     id: student.id,
     name: student.name,
@@ -47,15 +46,6 @@ function toCard(student, includeCompressedImage = false) {
     profilePicture: student.profilePicture,
   };
 
-  // Add optimized image for list view if requested
-  if (includeCompressedImage && student.profilePicture) {
-    card.compressedImage = imageCompressionService.optimizeImageUrl(
-      student.profilePicture,
-      256,
-      60  // quality parameter for Google Drive URLs
-    );
-  }
-
   return card;
 }
 
@@ -72,7 +62,10 @@ function matchesSearch(student, search) {
   return fields.some((f) => String(f || '').toLowerCase().includes(q));
 }
 
-async function list({ batch, search, limit = 24, offset = 0 } = {}) {
+async function list({ batch, search, openSource, internship, club, studentCouncil, limit = 24, offset = 0 } = {}) {
+
+  console.log(batch, search, openSource, internship, club, studentCouncil, limit, offset)
+  
   let students = await studentRepository.readAll();
 
   if (batch) {
@@ -83,6 +76,21 @@ async function list({ batch, search, limit = 24, offset = 0 } = {}) {
   if (search) {
     students = students.filter((s) => matchesSearch(s, search));
   }
+  if (openSource && openSource !== 'false') {
+    students = students.filter((s) => s.openSource && String(s.openSource).trim() !== '');
+  }
+  if (internship && internship !== 'false') {
+    students = students.filter(
+      (s) => (s.internshipRole && String(s.internshipRole).trim() !== '') ||
+             (s.internshipCompany && String(s.internshipCompany).trim() !== '')
+    );
+  }
+  if (club && club !== 'false') {
+    students = students.filter((s) => s.club && String(s.club).trim() !== '');
+  }
+  if (studentCouncil && studentCouncil !== 'false') {
+    students = students.filter((s) => s.studentCouncil && String(s.studentCouncil).trim() !== '');
+  }
 
   students.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 
@@ -90,7 +98,7 @@ async function list({ batch, search, limit = 24, offset = 0 } = {}) {
   const paginatedStudents = students.slice(offset, offset + limit);
 
   const responseData = paginatedStudents.map((student) =>
-    toCard(student, true)
+    toCard(student)
   );
 
   return {

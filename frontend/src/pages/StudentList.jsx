@@ -58,17 +58,37 @@ export default function StudentList() {
       searchTimeoutRef.current = setTimeout(() => {
         dispatch(fetchStudents({ search: searchInput }));
       }, 300);
+    } else if (!isInitialMount.current && searchInput === '') {
+      // Clear search
+      dispatch(fetchStudents({}));
     }
   }, [searchInput, dispatch]);
 
   // Handle filter changes
   const handleFilterChange = useCallback((filterId) => {
     setActiveFilterTab(filterId);
-    let batch = '';
-    if (filterId.startsWith('Batch')) {
-      batch = filterId.replace('Batch ', '');
+    setSearchInput('');
+    const filterParams = {};
+
+    if (filterId === 'All students') {
+      // No filters - show all
+      dispatch(fetchStudents({}));
+    } else if (filterId.startsWith('Batch')) {
+      filterParams.batch = filterId.replace('Batch ', '');
+      dispatch(fetchStudents(filterParams));
+    } else if (filterId === 'Open source') {
+      filterParams.openSource = 'true';
+      dispatch(fetchStudents(filterParams));
+    } else if (filterId === 'Internships') {
+      filterParams.internship = 'true';
+      dispatch(fetchStudents(filterParams));
+    } else if (filterId === 'Club Members') {
+      filterParams.club = 'true';
+      dispatch(fetchStudents(filterParams));
+    } else if (filterId === 'Student Council') {
+      filterParams.studentCouncil = 'true';
+      dispatch(fetchStudents(filterParams));
     }
-    dispatch(fetchStudents({ batch: batch || '' }));
   }, [dispatch]);
 
   const openModal = useCallback((student) => setSelectedStudent(student), []);

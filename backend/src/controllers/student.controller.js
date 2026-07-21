@@ -10,10 +10,14 @@ function handleError(res, err) {
 
 async function list(req, res) {
   try {
-    const { batch, search, limit, offset } = req.query;
+    const { batch, search, limit, offset, openSource, internship, club, studentCouncil } = req.query;
     const result = await studentService.list({
       batch,
       search,
+      openSource,
+      internship,
+      club,
+      studentCouncil,
       limit: Math.min(Number.parseInt(limit) || 24, 100), // Max 100 per request
       offset: Number.parseInt(offset) || 0,
     });
