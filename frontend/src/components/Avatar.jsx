@@ -12,10 +12,14 @@ function AvatarComponent({ student, size = 'md', className = "", onLoad }) {
     lg: 'w-32 h-32 text-4xl',
   }), []);
 
-  const photoUrl = React.useMemo(() =>
-    driveToDirectImg(student.profilePicture, 256),
-    [student.profilePicture]
-  );
+  const photoUrl = React.useMemo(() => {
+    // Use pre-optimized compressedImage from backend if available
+    if (student.compressedImage) {
+      return student.compressedImage;
+    }
+    // Fallback to frontend optimization for older data
+    return driveToDirectImg(student.profilePicture, 256);
+  }, [student.compressedImage, student.profilePicture]);
 
   // Added opacity transitions to smoothly fade in the image once loaded
   const finalClassName = mergeClasses(

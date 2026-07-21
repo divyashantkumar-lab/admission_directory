@@ -16,14 +16,6 @@ import {
   StudentCouncilIcon,
 } from '../components/icons';
 
-const debounce = (fn, delay) => {
-  let timeoutId;
-  return (...args) => {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => fn(...args), delay);
-  };
-};
-
 export default function StudentList() {
   const dispatch = useDispatch();
   const { list, loading, loadingMore, error, pagination } = useSelector(
@@ -33,23 +25,40 @@ export default function StudentList() {
   const [searchInput, setSearchInput] = useState('');
   const [activeFilterTab, setActiveFilterTab] = useState('All students');
   const [selectedStudent, setSelectedStudent] = useState(null);
+  const isInitialMount = useRef(true);
+  const searchTimeoutRef = useRef(null);
 
   const observerRef = useRef(null);
   const loadMoreRef = useRef(null);
 
-  // Initial fetch
+  // Initial fetch - only once on mount
   useEffect(() => {
-    dispatch(fetchStudents({}));
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      dispatch(fetchStudents({}));
+    }
+
+    // Cleanup function
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
   }, [dispatch]);
 
-  // Debounce search input
+  // Debounce search input - but skip on initial mount
   useEffect(() => {
-    const debouncedFn = debounce((value) => {
-      dispatch(fetchStudents({ search: value }));
-    }, 300);
+    if (!isInitialMount.current && searchInput !== '') {
+      // Clear previous timeout
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
 
-    debouncedFn(searchInput);
-    return () => clearTimeout(debouncedFn);
+      // Set new timeout
+      searchTimeoutRef.current = setTimeout(() => {
+        dispatch(fetchStudents({ search: searchInput }));
+      }, 300);
+    }
   }, [searchInput, dispatch]);
 
   // Handle filter changes
