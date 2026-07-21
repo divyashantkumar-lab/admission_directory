@@ -2,6 +2,7 @@ import {
   getFromCache,
   getAllFromCache,
   saveToCache,
+  saveMultipleToCache,
   deleteFromCache,
   getCacheMetadata,
   setCacheMetadata,
@@ -36,7 +37,6 @@ export const cacheService = {
 
       return students;
     } catch (error) {
-      console.warn('Error reading students list from cache:', error);
       return null;
     }
   },
@@ -46,19 +46,15 @@ export const cacheService = {
       // Clear previous data
       await clearStore(STORES.STUDENTS_LIST);
 
-      // Save each student
-      for (const student of students) {
-        await saveToCache(STORES.STUDENTS_LIST, student);
-      }
+      // Save all students in batch
+      await saveMultipleToCache(STORES.STUDENTS_LIST, students);
 
       // Update metadata
       await setCacheMetadata(METADATA_KEYS.STUDENTS_LIST, {
         count: students.length,
       });
 
-      console.log(`Cached ${students.length} students to IndexedDB`);
     } catch (error) {
-      console.warn('Error saving students list to cache:', error);
     }
   },
 
@@ -74,7 +70,6 @@ export const cacheService = {
 
       return student;
     } catch (error) {
-      console.warn(`Error reading student ${id} from cache:`, error);
       return null;
     }
   },
@@ -86,7 +81,6 @@ export const cacheService = {
         studentId: student.id,
       });
     } catch (error) {
-      console.warn(`Error saving student ${student.id} to cache:`, error);
     }
   },
 
@@ -96,7 +90,6 @@ export const cacheService = {
       await clearStore(STORES.STUDENTS_LIST);
       // Don't delete metadata, just clear store to force refetch
     } catch (error) {
-      console.warn('Error invalidating students list cache:', error);
     }
   },
 
@@ -107,11 +100,10 @@ export const cacheService = {
       const students = await getAllFromCache(STORES.STUDENTS_LIST);
       const updated = students.filter((s) => s.id !== id);
       await clearStore(STORES.STUDENTS_LIST);
-      for (const student of updated) {
-        await saveToCache(STORES.STUDENTS_LIST, student);
+      if (updated.length > 0) {
+        await saveMultipleToCache(STORES.STUDENTS_LIST, updated);
       }
     } catch (error) {
-      console.warn(`Error removing student ${id} from cache:`, error);
     }
   },
 
@@ -126,12 +118,9 @@ export const cacheService = {
       if (index !== -1) {
         students[index] = student;
         await clearStore(STORES.STUDENTS_LIST);
-        for (const s of students) {
-          await saveToCache(STORES.STUDENTS_LIST, s);
-        }
+        await saveMultipleToCache(STORES.STUDENTS_LIST, students);
       }
     } catch (error) {
-      console.warn(`Error updating student ${student.id} in cache:`, error);
     }
   },
 
@@ -141,7 +130,6 @@ export const cacheService = {
       await saveToCache(STORES.STUDENTS_DETAIL, student);
       await saveToCache(STORES.STUDENTS_LIST, student);
     } catch (error) {
-      console.warn(`Error adding student ${student.id} to cache:`, error);
     }
   },
 
@@ -151,9 +139,7 @@ export const cacheService = {
       await clearStore(STORES.STUDENTS_LIST);
       await clearStore(STORES.STUDENTS_DETAIL);
       await clearStore(STORES.CACHE_METADATA);
-      console.log('All caches cleared');
     } catch (error) {
-      console.warn('Error clearing all caches:', error);
     }
   },
 
@@ -166,7 +152,6 @@ export const cacheService = {
         lastUpdated: listMeta?.timestamp ? new Date(listMeta.timestamp).toLocaleString() : 'Never',
       };
     } catch (error) {
-      console.warn('Error getting cache stats:', error);
       return { studentsCount: 0, lastUpdated: 'Error' };
     }
   },

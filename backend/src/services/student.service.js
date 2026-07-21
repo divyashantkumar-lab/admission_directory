@@ -1,7 +1,8 @@
 const studentRepository = require('../repositories/student.repository');
+const imageCompressionService = require('./imageCompression.service');
 
-function toCard(student) {
-  return {
+function toCard(student, includeCompressedImage = false) {
+  const card = {
     id: student.id,
     name: student.name,
     year: Number.parseInt(student.year),
@@ -43,8 +44,18 @@ function toCard(student) {
     projectStackSem2: student.projectStackSem2,
     projectLinkSem2: student.projectLinkSem2,
     projectVideoSem2: student.projectVideoSem2,
-    profilePicture: student.profilePicture
+    profilePicture: student.profilePicture,
   };
+
+  // Add compressed image for list view if requested
+  if (includeCompressedImage && student.profilePicture) {
+    card.compressedImage = imageCompressionService.getCompressedImageUrl(
+      student.profilePicture,
+      256
+    );
+  }
+
+  return card;
 }
 
 function matchesSearch(student, search) {
@@ -60,8 +71,9 @@ function matchesSearch(student, search) {
   return fields.some((f) => String(f || '').toLowerCase().includes(q));
 }
 
-async function list({ batch, search } = {}) {
+async function list({ batch, search, limit = 24, offset = 0 } = {}) {
   let students = await studentRepository.readAll();
+
   if (batch) {
     students = students.filter(
       (s) => String(s.batch || '').toLowerCase() === batch.toLowerCase()
@@ -70,11 +82,25 @@ async function list({ batch, search } = {}) {
   if (search) {
     students = students.filter((s) => matchesSearch(s, search));
   }
+
   students.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
 
-  const responseData = students.map(toCard);
+  const total = students.length;
+  const paginatedStudents = students.slice(offset, offset + limit);
 
-  return responseData;
+  const responseData = paginatedStudents.map((student) =>
+    toCard(student, true)
+  );
+
+  return {
+    data: responseData,
+    pagination: {
+      total,
+      limit,
+      offset,
+      hasMore: offset + limit < total,
+    },
+  };
 }
 
 async function getById(id) {

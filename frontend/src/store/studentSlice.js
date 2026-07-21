@@ -6,45 +6,92 @@ const initialState = {
   list: [],
   current: null,
   loading: false,
+  loadingMore: false,
   error: null,
   filters: { batch: '', search: '' },
   fromCache: false,
+  pagination: {
+    total: 0,
+    limit: 24,
+    offset: 0,
+    hasMore: false,
+  },
 };
 
 export const fetchStudents = createAsyncThunk(
   'students/fetchList',
   async (params, { rejectWithValue }) => {
     try {
-      // Try to get from cache first
-      const cachedStudents = await cacheService.getStudentsListFromCache();
-      if (cachedStudents && cachedStudents.length > 0) {
-        return { data: cachedStudents, fromCache: true };
-      }
-
-      // Fallback to network
-      const query = {};
+      // Fallback to network with pagination
+      const query = {
+        limit: 24,
+        offset: 0,
+      };
       if (params?.batch) query.batch = params.batch;
       if (params?.search) query.search = params.search;
       const { data } = await axiosInstance.get('/students', { params: query });
 
       // Save to cache
-      await cacheService.saveStudentsListToCache(data.data);
+      if (data.data && data.data.length > 0) {
+        await cacheService.saveStudentsListToCache(data.data);
+      }
 
-      return { data: data.data, fromCache: false };
+      return {
+        data: data.data,
+        pagination: data.pagination,
+        fromCache: false,
+      };
     } catch (err) {
       // If network fails, try cache as fallback
       try {
         const cachedStudents = await cacheService.getStudentsListFromCache();
         if (cachedStudents && cachedStudents.length > 0) {
-          console.warn('Network failed, using stale cache');
-          return { data: cachedStudents, fromCache: true };
+          return {
+            data: cachedStudents,
+            pagination: {
+              total: cachedStudents.length,
+              limit: 24,
+              offset: 0,
+              hasMore: cachedStudents.length > 24,
+            },
+            fromCache: true,
+          };
         }
       } catch (cacheErr) {
-        console.warn('Cache fallback failed:', cacheErr);
+        // Cache fallback failed
       }
 
       return rejectWithValue(
         err.response?.data?.message || 'Failed to load students'
+      );
+    }
+  }
+);
+
+export const fetchMoreStudents = createAsyncThunk(
+  'students/fetchMore',
+  async (params, { rejectWithValue, getState }) => {
+    try {
+      const state = getState();
+      const currentOffset = state.students.pagination.offset;
+      const filters = state.students.filters;
+
+      const query = {
+        limit: 24,
+        offset: currentOffset + 24,
+      };
+      if (filters?.batch) query.batch = filters.batch;
+      if (filters?.search) query.search = filters.search;
+
+      const { data } = await axiosInstance.get('/students', { params: query });
+
+      return {
+        data: data.data,
+        pagination: data.pagination,
+      };
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || 'Failed to load more students'
       );
     }
   }
@@ -72,11 +119,10 @@ export const fetchStudentById = createAsyncThunk(
       try {
         const cachedStudent = await cacheService.getStudentDetailFromCache(id);
         if (cachedStudent) {
-          console.warn(`Network failed for student ${id}, using stale cache`);
           return { data: cachedStudent, fromCache: true };
         }
       } catch (cacheErr) {
-        console.warn('Cache fallback failed:', cacheErr);
+        // Cache fallback failed
       }
 
       return rejectWithValue(
@@ -157,12 +203,26 @@ const studentSlice = createSlice({
       .addCase(fetchStudents.fulfilled, (state, action) => {
         state.loading = false;
         state.list = action.payload.data;
+        state.pagination = action.payload.pagination;
         state.fromCache = action.payload.fromCache;
       })
       .addCase(fetchStudents.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
         state.fromCache = false;
+      })
+      .addCase(fetchMoreStudents.pending, (state) => {
+        state.loadingMore = true;
+        state.error = null;
+      })
+      .addCase(fetchMoreStudents.fulfilled, (state, action) => {
+        state.loadingMore = false;
+        state.list = [...state.list, ...action.payload.data];
+        state.pagination = action.payload.pagination;
+      })
+      .addCase(fetchMoreStudents.rejected, (state, action) => {
+        state.loadingMore = false;
+        state.error = action.payload;
       })
       .addCase(fetchStudentById.pending, (state) => {
         state.loading = true;

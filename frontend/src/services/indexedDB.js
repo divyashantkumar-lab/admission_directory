@@ -81,6 +81,19 @@ export const saveToCache = async (storeName, data) => {
   });
 };
 
+export const saveMultipleToCache = async (storeName, dataArray) => {
+  const database = await initDB();
+  return new Promise((resolve, reject) => {
+    const transaction = database.transaction([storeName], 'readwrite');
+    const store = transaction.objectStore(storeName);
+
+    dataArray.forEach(data => store.put(data));
+
+    transaction.onerror = () => reject(new Error('Failed to save multiple items to cache'));
+    transaction.oncomplete = () => resolve(dataArray.length);
+  });
+};
+
 export const deleteFromCache = async (storeName, key) => {
   const database = await initDB();
   return new Promise((resolve, reject) => {
