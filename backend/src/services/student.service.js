@@ -63,15 +63,20 @@ function matchesSearch(student, search) {
 }
 
 async function list({ batch, search, openSource, internship, club, studentCouncil, limit = 24, offset = 0 } = {}) {
-
-  console.log(batch, search, openSource, internship, club, studentCouncil, limit, offset)
-  
   let students = await studentRepository.readAll();
 
   if (batch) {
-    students = students.filter(
-      (s) => String(s.batch || '').toLowerCase() === batch.toLowerCase()
-    );
+    // Check if batch is a year (2024, 2025) - filter by classOf field
+    if (batch === '2024' || batch === '2025') {
+      students = students.filter(
+        (s) => String(s.classOf || '').startsWith(batch)
+      );
+    } else {
+      // Otherwise filter by batch field (legacy support)
+      students = students.filter(
+        (s) => String(s.batch || '').toLowerCase() === batch.toLowerCase()
+      );
+    }
   }
   if (search) {
     students = students.filter((s) => matchesSearch(s, search));
