@@ -73,8 +73,8 @@ export default function StudentList() {
     if (filterId === 'All students') {
       // No filters - show all
       dispatch(fetchStudents({}));
-    } else if (filterId.startsWith('Batch')) {
-      filterParams.batch = filterId.replace('Batch ', '');
+    } else if (filterId === '2024' || filterId === '2025') {
+      filterParams.batch = filterId;
       dispatch(fetchStudents(filterParams));
     } else if (filterId === 'Open source') {
       filterParams.openSource = 'true';
@@ -106,8 +106,8 @@ export default function StudentList() {
     { id: 'Internships', label: 'Internships', icon: <BriefcaseIcon /> },
     { id: 'Club Members', label: 'Club Members', icon: <ClubMembersIcon /> },
     { id: 'Student Council', label: 'Student Council', icon: <StudentCouncilIcon /> },
-    { id: 'Batch 2024', label: 'Batch 2024', icon: <StarIcon /> },
-    { id: 'Batch 2025', label: 'Batch 2025', icon: <StarIcon /> },
+    { id: '2024', label: 'Batch 2024', icon: <StarIcon /> },
+    { id: '2025', label: 'Batch 2025', icon: <StarIcon /> },
   ];
 
   // Infinite scroll: Load more when sentinel is visible
@@ -174,15 +174,8 @@ export default function StudentList() {
 
         {/* STUDENT DIRECTORY LIST */}
         <div className="w-full">
-          {/* Results metadata */}
-          <div className="flex justify-between items-center mb-4">
-            {!loading && (
-              <p className="text-xs font-bold text-black uppercase tracking-wider">
-                {pagination.total} profile{pagination.total !== 1 ? 's' : ''} found
-              </p>
-            )}
-
-            {/* Search input */}
+          {/* Search input */}
+          <div className="flex justify-end mb-4">
             <div className="relative w-64">
               <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
                 <SearchIcon />
@@ -270,7 +263,7 @@ export default function StudentList() {
               {!pagination.hasMore && list.length > 0 && (
                 <div className="text-center py-8 mt-8">
                   <p className="text-gray-400 text-sm">
-                    No more profiles to load • Showing {pagination.total} total
+                    No more profiles to load
                   </p>
                 </div>
               )}
